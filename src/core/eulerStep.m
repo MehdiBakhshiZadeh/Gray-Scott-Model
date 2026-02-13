@@ -1,4 +1,4 @@
-function [unew, vnew, info] = stepEuler(u, v, L, S, p, t)
+function [unew, vnew, info] = eulerStep(u, v, op, p, t)
 %STEPEULER  One explicit Euler step for the Gray–Scott model.
 %
 % Inputs:
@@ -18,25 +18,7 @@ end
 assert(isequal(size(u), size(v)), "stepEuler: u and v must have the same size.");
 
 % ---- Diffusion contributions ----
-mode = "matrix";
-if isfield(p,"diffusionMode") && ~isempty(p.diffusionMode)
-    mode = string(p.diffusionMode);
-end
-
-if mode == "stencil"
-    du_diff = p.Du * applyLaplacianStencil(u, S);
-    dv_diff = p.Dv * applyLaplacianStencil(v, S);
-
-elseif mode == "full"
-    du_diff = p.Du * applyFullLaplacian(u, L);
-    dv_diff = p.Dv * applyFullLaplacian(v, L);
-
-else
-    % "matrix" (sparse)
-    du_diff = p.Du * (L * u);
-    dv_diff = p.Dv * (L * v);
-end
-
+[du_diff, dv_diff] = applyDiffusion(u, v, op, p);
 
 
 % ---- Reaction contributions (pointwise kinetics) ----
@@ -50,8 +32,9 @@ sv = su;
 
 if isfield(p, 'sourceFcn') && ~isempty(p.sourceFcn)
     % Expect grid coordinates in p.grid.x and p.grid.y
-    x = p.grid.x;
-    y = p.grid.y;
+    x = op.grid.x;
+    y = op.grid.y;
+
 
     [su2D, sv2D] = p.sourceFcn(x, y, t, p);
     su = su2D(:);

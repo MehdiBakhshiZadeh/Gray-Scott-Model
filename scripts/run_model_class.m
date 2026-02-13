@@ -1,27 +1,16 @@
 clear; clc; close all;
 
 % Root of project = folder where this script lives
-rootDir = fileparts(mfilename("fullpath"));
+rootDir = fileparts(fileparts(mfilename("fullpath"))); % go up from scripts/ to project root
 
 % Ensure src is visible (absolute path, no cd side-effect)
-addpath(fullfile(rootDir, "src"));
+addpath(genpath(fullfile(rootDir, "src")));
 
 % Load default parameters + seed
-% Use: p = defaultParams("pearson");  % Pearson preset
+% Use: p = defaultParams("pearson");
 p = defaultParams();
-p.diffusionMode = "matrix";
-modelA = GrayScottModel(p);
-while modelA.t < p.T
-    info = modelA.step();
-end
-[UA, VA] = modelA.getFields2D();
-
-p.diffusionMode = "stencil";
-modelB = GrayScottModel(p);
-while modelB.t < p.T
-    info = modelB.step();
-end
-[UB, VB] = modelB.getFields2D();
+p.solver = "stencil";   % choose solver here
+p = finalizeParams(p);
 rng(p.seed, "twister");
 
 % Create a unique name for this run
@@ -60,14 +49,21 @@ fprintf(fid, "Platform: %s\n", computer);
 fprintf(fid, "Grid: Nx=%d, Ny=%d\n", p.Nx, p.Ny);
 fprintf(fid, "Time: dt=%g, T=%g\n", p.dt, p.T);
 fprintf(fid, "Model: Du=%g, Dv=%g, F=%g, k=%g\n", p.Du, p.Dv, p.F, p.k);
+if isfield(p,"solver")
+    fprintf(fid, "Solver: %s\n", string(p.solver));
+end
+if isfield(p,"diffusionMode")
+    fprintf(fid, "Diffusion mode: %s\n", string(p.diffusionMode));
+end
 fprintf(fid, "Output: plotEvery=%d (0 disables)\n", p.plotEvery);
 fprintf(fid, "Output: savePngEvery=%d (0 disables)\n", p.savePngEvery);
 fprintf(fid, "Plot field: %s\n", field);
 fprintf(fid, "Output directory: %s\n", outDir);
 
 % Create model object (builds grid, Laplacian, and initial condition)
-model = GrayScottModel(p);
-model.reset();
+grid  = buildGrid(p);
+op    = makeOperator(p, grid);
+model = GrayScottModel(p, grid);
 
 % Time loop settings
 Nt_exact = p.T / p.dt;
@@ -83,7 +79,10 @@ end
 
 % ---- Time stepping loop ----
 for n = 1:Nt
-    info = model.step();
+    [model.u, model.v, info] = eulerStep(model.u, model.v, op, p, model.t);
+    model.n = model.n + 1;
+    model.t = model.n * p.dt;
+
 
     if info.hasNaNInf
         error("NaN/Inf detected at step %d (t=%.3f). Stopping.", model.n, model.t);

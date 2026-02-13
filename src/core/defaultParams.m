@@ -20,7 +20,7 @@ p.preset = preset;
 % --- Model parameters (Gray–Scott equations) ---
 p.Du = 2e-5;    % diffusion coefficient of u
 p.Dv = 1e-5;    % diffusion coefficient of v
-p.F  = 0.04;    % feed rate
+p.F  = 0.03;    % feed rate
 p.k  = 0.06;    % kill rate
 
 % --- Domain / grid parameters ---
@@ -34,13 +34,28 @@ p.bc = "periodic";
 
 % --- Time integration ---
 % Smaller dt improves stability for explicit diffusion but increases runtime.
-p.dt = 0.1;     % time step size
+p.dt = 0.5;     % time step size
 p.T  = 500.0;   % final simulation time
 
 % --- Initial condition settings ---
 p.seed       = 1;     % RNG seed for reproducible perturbations
 p.icType     = "baseline"; % "baseline" | "pearson"
+p.diffusionMode = "matrix";   % "matrix" (sparse), "stencil", or "full" (dense)
 p.icPerturb  = 0.02;  % amplitude of random noise (if used)
+
+p.solver = "sparse";   % "sparse" | "dense" | "stencil"
+% Backward-compatible mapping to diffusionMode
+switch lower(string(p.solver))
+    case "sparse"
+        p.diffusionMode = "matrix";
+    case "dense"
+        p.diffusionMode = "full";
+    case "stencil"
+        p.diffusionMode = "stencil";
+    otherwise
+        error("Unknown p.solver='%s' (use sparse/dense/stencil)", string(p.solver));
+end
+
 
 % --- Output / visualization control ---
 p.caseName      = "baseline"; % label used in results folder naming

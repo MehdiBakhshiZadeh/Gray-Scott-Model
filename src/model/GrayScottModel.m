@@ -19,7 +19,6 @@ classdef GrayScottModel < handle
     properties
         p       % parameter struct
         grid    % grid struct (hx, hy, x, y)
-        L       % sparse Laplacian operator
 
         u       % state vector (Nx*Ny x 1)
         v       % state vector (Nx*Ny x 1)
@@ -35,7 +34,7 @@ classdef GrayScottModel < handle
     end
 
     methods
-        function obj = GrayScottModel(p)
+        function obj = GrayScottModel(p, grid)
             % Constructor: store parameters and build grid + operator.
             if nargin < 1 || isempty(p)
                 p = defaultParams();
@@ -43,20 +42,15 @@ classdef GrayScottModel < handle
             GrayScottModel.validateParams(p);
             obj.p = p;
 
-            obj.grid = buildGrid(obj.p);
-            obj.L    = buildLaplacian2D(obj.p, obj.grid);
+            if nargin < 2 || isempty(grid)
+                error("GrayScottModel: grid must be provided. Use buildGrid(p).");
+            end
+            obj.grid = grid;
 
             obj.initState();
+
         end
 
-        function info = step(obj)
-            %STEP  Advance the model by one explicit Euler step.
-
-            [obj.u, obj.v, info] = stepEuler(obj.u, obj.v, obj.L, obj.p);
-
-            obj.n = obj.n + 1;
-            obj.t = obj.n * obj.p.dt;
-        end
 
         function reset(obj)
             %RESET  Restore the initial condition and set t=0.

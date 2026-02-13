@@ -1,0 +1,18 @@
+# MATLAB
+*.asv
+*.mat
+
+# Results and generated data
+results/
+Archive/
+figures/verification/
+tests/figures/
+
+# Large files
+*.zip
+
+# OS
+.DS_Store
+Thumbs.db
+
+src/results_test/

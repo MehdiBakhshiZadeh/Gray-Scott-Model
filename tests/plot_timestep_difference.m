@@ -2,7 +2,7 @@ clear; clc; close all;
 
 %PLOT_TIMESTEP_DIFFERENCE  Visualize the effect of halving the time step.
 %
-%   This script runs the Gray–Scott model up to time T using dt and dt/2
+%   This script runs the Grayâ€“Scott model up to time T using dt and dt/2
 %   (same spatial grid), then visualizes the difference:
 %       ?v = v_dt - v_dt/2
 %
@@ -86,7 +86,7 @@ assert(abs(Nt - round(Nt)) < 1e-12, "T must be divisible by dt.");
 Nt = round(Nt);
 
 for n = 1:Nt
-    [u, v, info] = stepEuler(u, v, L, p);
+    [u, v, info] = eulerStep(u, v, L, p);
     if info.hasNaNInf
         error("NaN/Inf detected at step %d.", n);
     end

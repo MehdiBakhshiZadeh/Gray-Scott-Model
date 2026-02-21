@@ -1,7 +1,7 @@
 function r = test_pattern_sanity_pearson()
 %TEST_PATTERN_SANITY_PEARSON  Pearson-style qualitative pattern sanity test.
 %
-%   This test reproduces the four canonical Pearson Gray–Scott cases
+%   This test reproduces the four canonical Pearson Grayâ€“Scott cases
 %   (alpha, kappa, epsilon, theta) on a 256x256 periodic grid using
 %   dt = 1 and 200,000 time steps, as reported in the original paper.
 %
@@ -70,7 +70,7 @@ for icase = 1:numel(cases)
 
     for n = 1:Nt_full
         t = n * p.dt;
-        [u, v, info] = stepEuler(u, v, L, p, t);
+        [u, v, info] = eulerStep(u, v, L, p, t);
 
         if info.hasNaNInf
             error("NaN/Inf in Pearson case %s at step %d.", cases(icase).tag, n);

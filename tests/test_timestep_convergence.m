@@ -1,7 +1,7 @@
 function r = test_timestep_convergence()
 %TEST_TIMESTEP_CONVERGENCE  Temporal convergence check for explicit Euler.
 %
-%   Runs the Gray–Scott model to the same final time using three time step
+%   Runs the Grayâ€“Scott model to the same final time using three time step
 %   sizes: dt, dt/2, dt/4 on the same spatial grid and same initial condition.
 %   Computes successive differences in v:
 %       d12 = ||v_dt   - v_dt/2||
@@ -121,7 +121,7 @@ r.notes = sprintf("d12(L2)=%.3e, d24(L2)=%.3e, pL2=%.3f; pInf=%.3f", d12_L2, d24
 end
 
 function [U, V] = runToFinal(base, dt, u0, v0)
-%RUNTOFINAL  Run Gray–Scott from the same IC to time T with time step dt.
+%RUNTOFINAL  Run Grayâ€“Scott from the same IC to time T with time step dt.
 % Uses baseline sparse Laplacian (matrix mode) for verification.
 
 p = base;
@@ -143,7 +143,7 @@ v = v0;
 
 t = 0.0;
 for n = 1:Nt
-    [u, v, info] = stepEuler(u, v, L, S, p, t);
+    [u, v, info] = eulerStep(u, v, L, S, p, t);
 
     if isfield(info,"hasNaNInf") && info.hasNaNInf
         error("NaN/Inf detected at step %d for dt=%.6g.", n, dt);

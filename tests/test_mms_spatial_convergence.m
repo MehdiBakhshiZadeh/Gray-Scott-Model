@@ -74,7 +74,7 @@ for i = 1:numel(Ns)
     % Time loop
     t = 0.0;
     for n = 1:Nt
-        [u, v, info] = stepEuler(u, v, L, p, t);
+        [u, v, info] = eulerStep(u, v, L, p, t);
         if info.hasNaNInf
             error("NaN/Inf detected at N=%d, step=%d.", Ns(i), n);
         end

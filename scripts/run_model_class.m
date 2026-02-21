@@ -62,7 +62,6 @@ fprintf(fid, "Output directory: %s\n", outDir);
 
 % Create model object (builds grid, Laplacian, and initial condition)
 grid  = buildGrid(p);
-op    = makeOperator(p, grid);
 model = GrayScottModel(p, grid);
 
 % Time loop settings
@@ -79,10 +78,7 @@ end
 
 % ---- Time stepping loop ----
 for n = 1:Nt
-    [model.u, model.v, info] = eulerStep(model.u, model.v, op, p, model.t);
-    model.n = model.n + 1;
-    model.t = model.n * p.dt;
-
+    info = model.step();
 
     if info.hasNaNInf
         error("NaN/Inf detected at step %d (t=%.3f). Stopping.", model.n, model.t);

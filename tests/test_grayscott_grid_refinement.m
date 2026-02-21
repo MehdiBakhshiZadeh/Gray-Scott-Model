@@ -1,11 +1,11 @@
 function r = test_grayscott_grid_refinement()
-%TEST_GRAYSCOTT_GRID_REFINEMENT  Grid refinement study for Gray–Scott (explicit Euler).
+%TEST_GRAYSCOTT_GRID_REFINEMENT  Grid refinement study for Grayâ€“Scott (explicit Euler).
 %
-%   This test performs a grid refinement study for the Gray–Scott model using
+%   This test performs a grid refinement study for the Grayâ€“Scott model using
 %   explicit Euler time integration. The time step is scaled as dt ~ h^2 to
 %   limit time-discretization effects.
 %
-%   Because Gray–Scott is nonlinear and pattern-forming, strict second-order
+%   Because Grayâ€“Scott is nonlinear and pattern-forming, strict second-order
 %   convergence of the solution fields in L2 is not guaranteed (phase shifts
 %   can dominate). Therefore, this test:
 %     - checks that refinement reduces differences relative to the finest grid,
@@ -57,7 +57,7 @@ for i = 1:numel(Ns)
     v = V0(:);
 
     for n = 1:Nt
-        [u, v, info] = stepEuler(u, v, L, p);
+        [u, v, info] = eulerStep(u, v, L, p);
         if info.hasNaNInf
             error("NaN/Inf detected at N=%d, step=%d.", Ns(i), n);
         end
@@ -129,7 +129,7 @@ loglog(hs, Ev, "s-", "LineWidth", 1.6, "MarkerSize", 7);
 grid on;
 xlabel("h");
 ylabel("L2 difference vs finest-grid reference");
-title(sprintf("Gray–Scott grid refinement (Euler, T=%.1f): pU=%.2f, pV=%.2f", ...
+title(sprintf("Grayâ€“Scott grid refinement (Euler, T=%.1f): pU=%.2f, pV=%.2f", ...
     base.T, pU, pV), "Interpreter", "none");
 legend("u", "v", "Location", "southwest");
 

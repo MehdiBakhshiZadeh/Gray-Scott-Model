@@ -34,7 +34,7 @@ p4.dt = p.dt / 4;
 [u2, v2] = simulateToFinal(u0, v0, L, p2);
 [u4, v4] = simulateToFinal(u0, v0, L, p4);
 
-% Compare v-field (commonly used for Gray–Scott patterns)
+% Compare v-field (commonly used for Grayâ€“Scott patterns)
 d12 = v1 - v2;
 d24 = v2 - v4;
 
@@ -84,7 +84,7 @@ S = []; % matrix mode (no stencil operator here)
 
 for n = 1:Nt
     t = (n-1) * p.dt;  % current time before the Euler update
-    [u, v, info] = stepEuler(u, v, L, S, p, t);
+    [u, v, info] = eulerStep(u, v, L, S, p, t);
 
     if isfield(info,"hasNaNInf") && info.hasNaNInf
         error("NaN/Inf detected at step %d.", n);

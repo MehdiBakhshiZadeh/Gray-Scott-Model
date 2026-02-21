@@ -79,6 +79,9 @@ classdef GrayScottModel < handle
             obj.u = U0(:);
             obj.v = V0(:);
 
+            % Cache initial boundary values for Dirichlet "initial" mode
+            obj.p = GrayScottModel.buildBCcache(obj.p, U0, V0);
+
             obj.t = 0.0;
             obj.n = 0;
         end
@@ -93,6 +96,30 @@ classdef GrayScottModel < handle
             assert(p.Nx > 0 && p.Ny > 0, "Nx and Ny must be positive.");
             assert(p.dt > 0 && p.T >= 0, "dt must be positive and T must be nonnegative.");
             assert(p.Du >= 0 && p.Dv >= 0, "Diffusion coefficients must be nonnegative.");
+        end
+
+        function p = buildBCcache(p, U0, V0)
+            %BUILDBCCACHE Cache initial boundary values for Dirichlet "initial" mode.
+            %
+            % Stores boundary values from the initial condition so that boundaries can
+            % remain fixed even as the interior evolves.
+        
+            if ~isfield(p, "BC")
+                return;
+            end
+        
+            Nx = p.Nx; Ny = p.Ny;
+            assert(all(size(U0) == [Ny, Nx]) && all(size(V0) == [Ny, Nx]), ...
+                "buildBCcache: U0/V0 must be Ny-by-Nx.");
+        
+            C = struct();
+        
+            C.left.u   = U0(:,1);   C.left.v   = V0(:,1);
+            C.right.u  = U0(:,Nx);  C.right.v  = V0(:,Nx);
+            C.bottom.u = U0(1,:);   C.bottom.v = V0(1,:);
+            C.top.u    = U0(Ny,:);  C.top.v    = V0(Ny,:);
+        
+            p.BCcache = C;
         end
 
         function op = buildOperator(p, grid)

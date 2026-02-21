@@ -30,12 +30,27 @@ p.Nx = 128;     % number of grid points in x
 p.Ny = 128;     % number of grid points in y
 
 % --- Boundary condition ---
-p.bc = "periodic";
+p.BC = struct();
+
+sides = ["left","right","bottom","top"];
+for i = 1:numel(sides)
+    side = sides(i);
+
+    p.BC.(side).type = "periodic";  % "periodic" | "dirichlet" | "neumann"
+
+    % Dirichlet settings
+    p.BC.(side).dirichletMode  = "initial";  % "initial" | "constant"
+    p.BC.(side).dirichletValue = struct("u", 0.0, "v", 0.0);
+
+    % Neumann settings (du/dn = g)
+    p.BC.(side).neumannMode  = "constant";
+    p.BC.(side).neumannValue = struct("u", 0.0, "v", 0.0);
+end
 
 % --- Time integration ---
 % Smaller dt improves stability for explicit diffusion but increases runtime.
 p.dt = 0.5;     % time step size
-p.T  = 500.0;   % final simulation time
+p.T  = 500;   % final simulation time
 
 % --- Initial condition settings ---
 p.seed       = 1;     % RNG seed for reproducible perturbations
@@ -60,7 +75,7 @@ end
 % --- Output / visualization control ---
 p.caseName      = "baseline"; % label used in results folder naming
 p.plotField     = "v";        % field shown in live plots ("u" or "v")
-p.plotEvery     = 10;         % update live plot every N steps (0 disables)
+p.plotEvery     = 20;         % update live plot every N steps (0 disables)
 p.savePngEvery  = 50;        % export PNG every N steps (0 disables)
 
 % --- Preset overrides ---

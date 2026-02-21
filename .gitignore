@@ -16,3 +16,12 @@ tests/figures/
 Thumbs.db
 
 src/results_test/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls

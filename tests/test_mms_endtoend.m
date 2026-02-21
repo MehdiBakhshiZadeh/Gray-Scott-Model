@@ -1,7 +1,7 @@
 function r = test_mms_endtoend()
 %TEST_MMS_ENDTOEND  End-to-end MMS verification on a single grid.
 %
-%   This test verifies the full Gray–Scott solver using the Method of
+%   This test verifies the full Grayâ€“Scott solver using the Method of
 %   Manufactured Solutions (MMS). Analytic source terms are applied so that
 %   a known exact solution (u*, v*) is recovered by the numerical method.
 %
@@ -36,12 +36,12 @@ L = buildLaplacian2D(p, grid);
 m = mms_targets();
 s = mms_sources(p);
 
-% Provide grid coordinates to stepEuler via p.grid
+% Provide grid coordinates to eulerStep via p.grid
 p.grid = struct();
 p.grid.x = X;
 p.grid.y = Y;
 
-% Source function used inside stepEuler (returns 2D arrays)
+% Source function used inside eulerStep (returns 2D arrays)
 p.sourceFcn = @(x,y,t,pp) deal(s.su(x,y,t), s.sv(x,y,t));
 
 % Initial condition = exact solution at t = 0
@@ -61,7 +61,7 @@ S = [];
 t = 0.0;
 
 for n = 1:Nt
-    [u, v, info] = stepEuler(u, v, L, S, p, t);
+    [u, v, info] = eulerStep(u, v, L, S, p, t);
 
     if isfield(info,"hasNaNInf") && info.hasNaNInf
         error("NaN/Inf detected during MMS run at step %d.", n);

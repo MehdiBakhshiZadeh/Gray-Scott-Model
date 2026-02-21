@@ -2,12 +2,14 @@ function L = buildLaplacian2D(p, grid)
 %BUILDLAPLACIAN2D  Build the 2D Laplacian operator as a sparse matrix.
 %
 %   L = BUILDLAPLACIAN2D(p, grid) returns the sparse matrix that applies the
-%   standard second-order (5-point) finite-difference Laplacian on a uniform,
-%   periodic 2D grid.
+%   standard second-order (5-point) finite-difference Laplacian on a uniform 2D grid 
+%   with periodic connectivity (operator-level periodicity).
 %
 %   Inputs:
 %     p.Nx, p.Ny : number of grid points in x and y (integers >= 3)
-%     p.bc       : boundary condition type (currently only "periodic")
+%     p.BC       : boundary conditions are handled outside the operator
+%                  (strong enforcement after each time step). The Laplacian
+%                  operator is assembled assuming periodic connectivity.
 %     grid.hx, grid.hy : grid spacings in x and y (positive)
 %
 %   Output:
@@ -21,7 +23,7 @@ function L = buildLaplacian2D(p, grid)
 %     This convention determines the Kronecker-product ordering below.
 
 % --- Input validation ---
-requiredP = ["Nx","Ny","bc"];
+requiredP = ["Nx","Ny"];
 for k = 1:numel(requiredP)
     assert(isfield(p, requiredP(k)), "buildLaplacian2D: missing parameter p.%s", requiredP(k));
 end
@@ -34,11 +36,6 @@ Ny = p.Ny;
 assert(mod(Nx,1) == 0 && mod(Ny,1) == 0, "buildLaplacian2D: Nx and Ny must be integers.");
 assert(Nx >= 3 && Ny >= 3, "buildLaplacian2D: Nx and Ny must be >= 3.");
 assert(grid.hx > 0 && grid.hy > 0, "buildLaplacian2D: hx and hy must be positive.");
-
-bc = string(p.bc);
-if bc ~= "periodic"
-    error("buildLaplacian2D: only periodic boundary condition is implemented (p.bc = ""periodic"").");
-end
 
 % --- 1D Laplacians (unscaled stencils) ---
 Lx1 = buildLaplacian1D_periodic(Nx); % acts along x (columns)

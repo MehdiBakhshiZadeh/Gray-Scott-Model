@@ -1,7 +1,11 @@
 function r = test_variantB_endtoend_equivalence()
 %TEST_VARIANTB_ENDTOEND_EQUIVALENCE
 % End-to-end comparison using GrayScottModel class:
-% baseline sparse diffusion vs stencil diffusion.
+% sparse-matrix diffusion vs stencil diffusion.
+%
+% Note:
+% Diffusion operators use periodic connectivity. Physical boundary conditions
+% are enforced after each time step and are not varied in this equivalence test.
 
 testName = "test_variantB_endtoend_equivalence";
 r = makeResult(testName, struct());
@@ -11,19 +15,25 @@ r.notes = "";
 try
     % --- Fixed run setup ---
     p = defaultParams();
-    p.bc = "periodic";
 
     % Short run to keep it fast
     p.T  = 5;
     p.dt = 0.2;
 
+    % Normalize parameters (solver mapping, BC defaults, etc.)
+    p = finalizeParams(p);
+
     % If IC uses RNG, keep it reproducible
     rng(1);
+
+    % Build grid once (same for both variants)
+    grid = buildGrid(p);
 
     % --- Baseline (matrix) ---
     pA = p;
     pA.diffusionMode = "matrix";
-    modelA = GrayScottModel(pA);
+    modelA = GrayScottModel(pA, grid);
+
     while modelA.t < pA.T
         info = modelA.step();
         if isfield(info,"hasNaNInf") && info.hasNaNInf
@@ -36,7 +46,8 @@ try
     rng(1); % reset RNG so IC matches exactly
     pB = p;
     pB.diffusionMode = "stencil";
-    modelB = GrayScottModel(pB);
+    modelB = GrayScottModel(pB, grid);
+
     while modelB.t < pB.T
         info = modelB.step();
         if isfield(info,"hasNaNInf") && info.hasNaNInf

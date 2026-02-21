@@ -1,6 +1,11 @@
 function r = test_laplacian_stencil_equivalence()
 %TEST_LAPLACIAN_STENCIL_EQUIVALENCE
-% Compare sparse Laplacian vs stencil apply for periodic BC.
+% Compare sparse Laplacian vs stencil apply for periodic connectivity.
+%
+% Note:
+% The diffusion operators are assembled with periodic connectivity. Physical
+% boundary conditions (Dirichlet/Neumann) are enforced after each time step
+% and are therefore not part of this operator equivalence test.
 
 testName = "test_laplacian_stencil_equivalence";
 r = makeResult(testName, struct());   % standardized struct
@@ -8,7 +13,7 @@ r.pass  = false;                      % default fail until proven otherwise
 r.notes = "";
 
 try
-    % Multiple sizes catches reshape/index mistakes
+    % Multiple sizes catch reshape/index mistakes
     sizes = [ ...
         32  32; ...
         64  48; ...
@@ -26,7 +31,6 @@ try
         p = defaultParams();
         p.Nx = Nx;
         p.Ny = Ny;
-        p.bc = "periodic";
 
         grid = buildGrid(p);
         L = buildLaplacian2D(p, grid);

@@ -1,7 +1,7 @@
 function [u, v] = applyBoundaryConditions(u, v, p, grid, BCcache)
 %APPLYBOUNDARYCONDITIONS Enforce boundary conditions on the 2D state fields.
 %
-%   [u, v] = applyBoundaryConditions(u, v, p, BCcache) overwrites boundary
+%   [u, v] = applyBoundaryConditions(u, v, p, grid, BCcache) overwrites boundary
 %   grid nodes according to p.BC (per-side periodic/dirichlet/neumann).
 %
 %   Boundary conventions (with U = reshape(u, Ny, Nx)):
@@ -27,7 +27,8 @@ function [u, v] = applyBoundaryConditions(u, v, p, grid, BCcache)
 %
 % Inputs:
 %   u, v     : state vectors (Nx*Ny x 1)
-%   p        : parameter struct (requires Nx, Ny and grid spacing in p.grid)
+%   p        : parameter struct (requires Nx, Ny and p.BC)
+%   grid     : grid struct (requires hx, hy)
 %   BCcache  : struct of cached initial boundary values for "initial" mode
 %
 % Outputs:
@@ -73,16 +74,16 @@ v = V(:);
 
     function applyDirichlet(sideName, setter, cacheGetter)
         bc = p.BC.(sideName);
-        if string(bc.type) ~= "dirichlet"
+        type = lower(strtrim(string(bc.type)));
+        if type ~= "dirichlet"
             return;
         end
-
-        mode = string(bc.dirichletMode);
+        mode = lower(strtrim(string(bc.dirichletMode)));
         if mode == "constant"
             U = setter(U, bc.dirichletValue.u);
             V = setter(V, bc.dirichletValue.v);
         elseif mode == "initial"
-            assert(nargin >= 4 && ~isempty(BCcache), ...
+            assert(~isempty(BCcache), ...
                 "applyBoundaryConditions: BCcache required for dirichletMode='initial'.");
             C = cacheGetter(BCcache);
             U = setter(U, C.u);
@@ -94,12 +95,11 @@ v = V(:);
 
     function applyNeumann(sideName, updater)
         bc = p.BC.(sideName);
-        if string(bc.type) ~= "neumann"
+        type = lower(strtrim(string(bc.type)));
+        if type ~= "neumann"
             return;
         end
-
-        % For now only "constant" is supported, but stored explicitly.
-        mode = string(bc.neumannMode);
+        mode = lower(strtrim(string(bc.neumannMode)));
         if mode ~= "constant"
             error("applyBoundaryConditions: unknown neumannMode '%s' on %s.", mode, sideName);
         end

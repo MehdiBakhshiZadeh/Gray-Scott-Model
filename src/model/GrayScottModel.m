@@ -1,5 +1,5 @@
 classdef GrayScottModel < handle
-    %GRAYSCOTTMODEL  Gray–Scott reaction–diffusion simulator (2D, periodic).
+    %GRAYSCOTTMODEL  %GRAYSCOTTMODEL  Gray–Scott reaction–diffusion simulator (2D).
     %
     % Stores parameters, grid, diffusion operator, and state (u,v).
     % Provides:
@@ -30,6 +30,9 @@ classdef GrayScottModel < handle
             if nargin < 1 || isempty(p)
                 p = defaultParams();
             end
+
+            p = finalizeParams(p);
+
             GrayScottModel.validateParams(p);
             obj.p = p;
 
@@ -75,6 +78,10 @@ classdef GrayScottModel < handle
 
     methods (Access = private)
         function initState(obj)
+            % Deterministic initialization (used for reproducibility and GUI consistency)
+            if isfield(obj.p, "seed") && ~isempty(obj.p.seed)
+                rng(obj.p.seed, "twister");
+            end
             [U0, V0] = initialCondition(obj.p);
             obj.u = U0(:);
             obj.v = V0(:);
@@ -138,31 +145,7 @@ classdef GrayScottModel < handle
             op.mode = mode;
             op.grid = grid;
 
-            % ---- IMPORTANT ----
-            % You must have one of the operator builders below in your project.
-            % If your function names differ, tell me and we'll adapt.
-            %
-
-            % Explicit builders (common pattern)
-            switch mode
-                case "matrix"
-                    if exist('makeOperator_sparse','file') ~= 2
-                        error("buildOperator: makeOperator_sparse.m not found on path.");
-                    end
-                    op = makeOperator_sparse(p, grid);
-                case "full"
-                    if exist('makeOperator_dense','file') ~= 2
-                        error("buildOperator: makeOperator_dense.m not found on path.");
-                    end
-                    op = makeOperator_dense(p, grid);
-                case "stencil"
-                    if exist('makeOperator_stencil','file') ~= 2
-                        error("buildOperator: makeOperator_stencil.m not found on path.");
-                    end
-                    op = makeOperator_stencil(p, grid);
-                otherwise
-                    error("buildOperator: unknown diffusionMode '%s'", mode);
-            end
+            op = makeOperator(p, grid);
 
             % Ensure required fields exist
             if ~isfield(op,'mode'), op.mode = mode; end

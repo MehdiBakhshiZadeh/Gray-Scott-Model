@@ -12,7 +12,18 @@ function [du_diff, dv_diff] = applyDiffusion(u, v, op, p)
 % Outputs:
 %   du_diff, dv_diff : diffusion contributions (N x 1)
 
-mode = string(op.mode);
+mode = lower(strtrim(string(op.mode)));
+
+assert(isfield(p,"Du") && isfield(p,"Dv"), "applyDiffusion: p must contain Du and Dv.");
+
+switch mode
+    case "matrix"
+        assert(isfield(op,"L") && ~isempty(op.L), "applyDiffusion: op.L is required for mode='matrix'.");
+    case "full"
+        assert(isfield(op,"L") && ~isempty(op.L), "applyDiffusion: op.L is required for mode='full'.");
+    case "stencil"
+        assert(isfield(op,"S") && ~isempty(op.S), "applyDiffusion: op.S is required for mode='stencil'.");
+end
 
 switch mode
     case "stencil"

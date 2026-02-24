@@ -10,7 +10,8 @@ function [fu, fv] = reactionGrayScott(u, v, p)
 
 % Basic input checks to avoid silent dimension or parameter errors.
 assert(isequal(size(u), size(v)), "reactionGrayScott: u and v must be same size.");
-assert(isfield(p,"F") && isfield(p,"k"), "reactionGrayScott: p must contain F and k.");
+assert(isfield(p,"F"), "reactionGrayScott: missing parameter p.F.");
+assert(isfield(p,"k"), "reactionGrayScott: missing parameter p.k.");
 
 % Reaction kinetics
 uv2 = u .* (v.^2);

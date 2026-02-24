@@ -1,7 +1,7 @@
 function grid = buildGrid(p)
 %BUILDGRID  Construct a uniform 2D grid for the simulation domain.
 %
-%   grid = BUILDGRID(p) creates a periodic, uniformly-spaced grid on
+%   grid = BUILDGRID(p) creates a uniformly-spaced grid on
 %   [0, Lx) x [0, Ly) using Nx-by-Ny points.
 %
 %   Inputs:
@@ -32,4 +32,10 @@ grid.hy = p.Ly / p.Ny;
 
 grid.x = (0:p.Nx-1) * grid.hx;  % row vector
 grid.y = (0:p.Ny-1) * grid.hy;  % row vector
+
+grid.Nx = p.Nx;
+grid.Ny = p.Ny;
+grid.Lx = p.Lx;
+grid.Ly = p.Ly;
+
 end

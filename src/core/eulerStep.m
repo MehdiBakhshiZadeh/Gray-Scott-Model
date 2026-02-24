@@ -39,9 +39,13 @@ end
 unew = u + p.dt * (du_diff + du_reac + su);
 vnew = v + p.dt * (dv_diff + dv_reac + sv);
 
-% ---- Enforce boundary conditions (Option A: overwrite after update) ----
-if isfield(p, "BC") && isfield(p, "BCcache")
-    [unew, vnew] = applyBoundaryConditions(unew, vnew, p, op.grid, p.BCcache);
+% ---- Enforce boundary conditions (overwrite after update) ----
+if isfield(p, "BC") && ~isempty(p.BC)
+    if isfield(p, "BCcache")
+        [unew, vnew] = applyBoundaryConditions(unew, vnew, p, op.grid, p.BCcache);
+    else
+        [unew, vnew] = applyBoundaryConditions(unew, vnew, p, op.grid, []);
+    end
 end
 
 % ---- Diagnostics ----
@@ -52,6 +56,6 @@ info.v_max = max(vnew);
 info.hasNaNInf = any(~isfinite(unew)) || any(~isfinite(vnew));
 
 if info.hasNaNInf
-    warning("NaN or Inf detected in solution after Euler step.");
+    warning("GrayScott:eulerStep:NaNInf", "NaN or Inf detected in solution after one Euler step.");
 end
 end

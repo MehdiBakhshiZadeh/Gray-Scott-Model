@@ -21,7 +21,7 @@ for m = 1:numel(modes)
 
     % --- Parameters and grid size (Option A from report) ---
     p = defaultParams();
-    p.solver = modeToSolver(p, mode);
+    p.diffusionMode = mode;
 
     p.Nx = 64;
     p.Ny = 64;
@@ -124,25 +124,3 @@ end
 disp("test_boundary_conditions: PASSED");
 
 end
-
-% ===================== local helper =====================
-
-function solver = modeToSolver(p, mode)
-%MODETOSOLVER map diffusion mode name to p.solver legacy interface.
-%
-% Your code uses p.solver as a user-facing knob and finalizeParams maps it
-% to p.diffusionMode. Keep this mapping centralized in the test.
-
-mode = lower(string(mode));
-switch mode
-    case "matrix"
-        solver = "sparse";
-    case "stencil"
-        solver = "stencil";
-    case "full"
-        solver = "dense";
-    otherwise
-        error("Unknown mode '%s'.", mode);
-end
-end
-

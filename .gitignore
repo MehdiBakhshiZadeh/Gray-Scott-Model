@@ -7,6 +7,7 @@ results/
 Archive/
 figures/verification/
 tests/figures/
+figures_test/
 
 # Large files
 *.zip

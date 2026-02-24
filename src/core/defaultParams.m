@@ -11,7 +11,7 @@ function p = defaultParams(preset)
 if nargin < 1
     preset = "baseline";
 else
-    preset = string(preset);
+    preset = lower(strtrim(string(preset)));
 end
 
 % Store preset name (normalized form)
@@ -26,8 +26,8 @@ p.k  = 0.06;    % kill rate
 % --- Domain / grid parameters ---
 p.Lx = 1.0;     % domain length in x
 p.Ly = 1.0;     % domain length in y
-p.Nx = 128;     % number of grid points in x
-p.Ny = 128;     % number of grid points in y
+p.Nx = 128;     % number of grid points in x (must be positive integer)
+p.Ny = 128;     % number of grid points in y (must be positive integer)
 
 % --- Boundary condition ---
 p.BC = struct();
@@ -53,27 +53,19 @@ p.dt = 0.5;     % time step size
 p.T  = 500;   % final simulation time
 
 % --- Initial condition settings ---
-p.seed       = 1;     % RNG seed for reproducible perturbations
+p.seed       = 1;     % RNG seed used for reproducible initialization
 p.icType     = "baseline"; % "baseline" | "pearson"
-p.diffusionMode = "matrix";   % "matrix" (sparse), "stencil", or "full" (dense)
 p.icPerturb  = 0.02;  % amplitude of random noise (if used)
 
-p.solver = "sparse";   % "sparse" | "dense" | "stencil"
-% Backward-compatible mapping to diffusionMode
-switch lower(string(p.solver))
-    case "sparse"
-        p.diffusionMode = "matrix";
-    case "dense"
-        p.diffusionMode = "full";
-    case "stencil"
-        p.diffusionMode = "stencil";
-    otherwise
-        error("Unknown p.solver='%s' (use sparse/dense/stencil)", string(p.solver));
-end
+% Diffusion operator mode:
+%   "matrix"  : sparse Laplacian
+%   "stencil" : matrix-free stencil
+%   "full"    : dense matrix (small grids only)
+p.diffusionMode = "matrix";
 
 
 % --- Output / visualization control ---
-p.caseName      = "baseline"; % label used in results folder naming
+p.caseName      = preset; % label used in results folder naming
 p.plotField     = "v";        % field shown in live plots ("u" or "v")
 p.plotEvery     = 20;         % update live plot every N steps (0 disables)
 p.savePngEvery  = 50;        % export PNG every N steps (0 disables)
@@ -95,8 +87,6 @@ switch preset
 
         % Keep dt conservative by default for stability
         % p.dt = 1.0;  % Enable only after stability testing
-
-        p.caseName = "pearson";
 
     otherwise
         error("defaultParams: unknown preset '%s'. Use 'baseline' or 'pearson'.", preset);

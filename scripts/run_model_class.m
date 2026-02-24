@@ -9,9 +9,8 @@ addpath(genpath(fullfile(rootDir, "src")));
 % Load default parameters + seed
 % Use: p = defaultParams("pearson");
 p = defaultParams();
-p.solver = "stencil";   % choose solver here
+p.diffusionMode = "stencil";   % "matrix" | "stencil" | "full"
 p = finalizeParams(p);
-rng(p.seed, "twister");
 
 % Create a unique name for this run
 timestamp = datestr(now, "yyyy-mm-dd_HH-MM-SS");
@@ -49,9 +48,6 @@ fprintf(fid, "Platform: %s\n", computer);
 fprintf(fid, "Grid: Nx=%d, Ny=%d\n", p.Nx, p.Ny);
 fprintf(fid, "Time: dt=%g, T=%g\n", p.dt, p.T);
 fprintf(fid, "Model: Du=%g, Dv=%g, F=%g, k=%g\n", p.Du, p.Dv, p.F, p.k);
-if isfield(p,"solver")
-    fprintf(fid, "Solver: %s\n", string(p.solver));
-end
 if isfield(p,"diffusionMode")
     fprintf(fid, "Diffusion mode: %s\n", string(p.diffusionMode));
 end

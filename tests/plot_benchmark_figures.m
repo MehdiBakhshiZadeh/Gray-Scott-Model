@@ -45,9 +45,9 @@ end
 function make_compute_loglog(T, outDir)
 
 modeWanted    = "compute_off";
-solversWanted = ["sparse_matrix","stencil","dense_matrix"];
+solversWanted = ["matrix","stencil","full"];
 
-solverCol = string(T.solver);
+solverCol = string(T.diffusionMode);
 modeCol   = string(T.mode);
 
 Tc = T(modeCol == modeWanted,:);
@@ -100,9 +100,9 @@ end
 function make_render_loglog(T, outDir)
 
 modeWanted    = "render_on";
-solversWanted = ["sparse_matrix","stencil","dense_matrix"];
+solversWanted = ["matrix","stencil","full"];
 
-solverCol = string(T.solver);
+solverCol = string(T.diffusionMode);
 modeCol   = string(T.mode);
 
 Tc = T(modeCol == modeWanted,:);
@@ -154,8 +154,8 @@ end
 
 function make_memory_loglog(T, outDir)
 
-solversWanted = ["sparse_matrix","stencil","dense_matrix"];
-solverCol = string(T.solver);
+solversWanted = ["matrix","stencil","full"];
+solverCol = string(T.diffusionMode);
 
 Nx = double(T.Nx);
 Ny = double(T.Ny);

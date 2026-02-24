@@ -15,8 +15,9 @@ function [U, V] = initialCondition(p)
 %     to both U and V.
 %
 %   Notes:
-%     This function does not set the random seed. If you require fully
-%     reproducible noise, call rng(p.seed, ...) before calling this function.
+%     This function generates noise using randn. Reproducibility depends on
+%     the current RNG state (the GrayScottModel constructor/reset sets rng(p.seed)
+%     when p.seed is provided).
 
 % --- Input validation ---
 required = ["Nx","Ny"];
@@ -44,7 +45,7 @@ cy = floor(Ny/2);
 
 icType = "baseline";
 if isfield(p, "icType")
-    icType = string(p.icType);
+    icType = lower(strtrim(string(p.icType)));
 end
 
 switch icType

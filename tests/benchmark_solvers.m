@@ -59,7 +59,7 @@ if ~exist(outDir, 'dir'); mkdir(outDir); end
 
 % --- Canonical result row template (all fields, always present) ---
 rowTemplate = struct( ...
-    "solver","", ...
+    "diffusionMode","", ...
     "mode","", ...
     "Nx",NaN, ...
     "Ny",NaN, ...
@@ -93,7 +93,6 @@ for mi = 1:numel(modes)
         dt_used = compute_dt_used(Nx, Ny, cfg);
 
         for si = 1:numel(solvers)
-            solverLabel = string(solvers(si).label);
             solverMode  = string(solvers(si).mode);  % "matrix" | "stencil" | "full"
 
             % Enforce dense-only grids for "full"
@@ -131,7 +130,7 @@ for mi = 1:numel(modes)
             row_i = row_i + 1;
             row = rowTemplate;
 
-            row.solver = solverLabel;
+            row.diffusionMode = solverMode;
             row.mode   = mode;
             row.Nx = Nx; row.Ny = Ny;
             row.warmup  = cfg.warmup;
@@ -162,7 +161,7 @@ save(fullfile(outDir, "benchmark_results.mat"), "cfg", "rows");
 T = struct2table(rows);
 
 colOrder = { ...
-    'solver','mode','Nx','Ny','warmup','nsteps','repeats','dt_used','plotEvery', ...
+    'diffusionMode','mode','Nx','Ny','warmup','nsteps','repeats','dt_used','plotEvery', ...
     'total_sec_median','total_sec_min','total_sec_iqr', ...
     'sec_per_step_median','mem_bytes_est','fps_median' ...
 };
@@ -383,3 +382,4 @@ else
     mem_bytes = bytes_uv + 1024;
 end
 end
+

@@ -1,21 +1,20 @@
 function p = finalizeParams(p)
-%FINALIZEPARAMS Apply derived/default mappings after user edits.
+%FINALIZEPARAMS Normalize parameters after user edits.
 %
-% Ensures p.diffusionMode is consistent with p.solver and normalizes the
+% Ensures p.diffusionMode is present and normalized, and normalizes the
 % boundary-condition specification p.BC (per-side periodic/dirichlet/neumann).
+%
+% Canonical diffusion selector:
+%   p.diffusionMode = "matrix" | "stencil" | "full"
 
-% ---- Solver ↔ diffusionMode mapping ----
-if isfield(p, "solver") && ~isempty(p.solver)
-    switch lower(string(p.solver))
-        case "sparse"
-            p.diffusionMode = "matrix";
-        case "dense"
-            p.diffusionMode = "full";
-        case "stencil"
-            p.diffusionMode = "stencil";
-        otherwise
-            error("finalizeParams: unknown p.solver='%s' (use sparse/dense/stencil)", string(p.solver));
-    end
+% ---- Diffusion mode normalization ----
+if ~isfield(p, "diffusionMode") || isempty(p.diffusionMode)
+    error("finalizeParams: missing parameter p.diffusionMode.");
+end
+p.diffusionMode = lower(strtrim(string(p.diffusionMode)));
+
+if ~any(p.diffusionMode == ["matrix","stencil","full"])
+    error("finalizeParams: invalid p.diffusionMode='%s' (use matrix/stencil/full).", p.diffusionMode);
 end
 
 % ---- Boundary-condition normalization ----
@@ -26,7 +25,9 @@ end
 % ======================= helper =======================
 
 function p = normalizeBC(p)
-%NORMALIZEBC Ensure p.BC exists and has all required subfields.
+%NORMALIZEBC Ensure p.BC exists and contains valid per-side settings.
+% This function fills missing fields with safe defaults and validates
+% supported options: periodic, dirichlet (initial/constant), neumann (constant).
 
 sides = ["left","right","bottom","top"];
 
@@ -48,7 +49,7 @@ for i = 1:numel(sides)
     if ~isfield(bc, "type") || isempty(bc.type)
         bc.type = "periodic";
     end
-    bc.type = lower(string(bc.type));
+    bc.type = lower(strtrim(string(bc.type)));
 
     if ~any(bc.type == ["periodic","dirichlet","neumann"])
         error("finalizeParams: invalid p.BC.%s.type='%s'.", side, bc.type);
@@ -58,7 +59,7 @@ for i = 1:numel(sides)
     if ~isfield(bc, "dirichletMode") || isempty(bc.dirichletMode)
         bc.dirichletMode = "initial";
     end
-    bc.dirichletMode = lower(string(bc.dirichletMode));
+    bc.dirichletMode = lower(strtrim(string(bc.dirichletMode)));
 
     if ~any(bc.dirichletMode == ["initial","constant"])
         error("finalizeParams: invalid p.BC.%s.dirichletMode='%s'.", side, bc.dirichletMode);
@@ -74,7 +75,7 @@ for i = 1:numel(sides)
     if ~isfield(bc, "neumannMode") || isempty(bc.neumannMode)
         bc.neumannMode = "constant";
     end
-    bc.neumannMode = lower(string(bc.neumannMode));
+    bc.neumannMode = lower(strtrim(string(bc.neumannMode)));
 
     if bc.neumannMode ~= "constant"
         error("finalizeParams: invalid p.BC.%s.neumannMode='%s'.", side, bc.neumannMode);

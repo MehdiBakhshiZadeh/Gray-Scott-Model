@@ -28,7 +28,7 @@ V = reshape(v, p.Ny, p.Nx);
 % Choose which field to plot (default: v)
 field = "v";
 if isfield(p, "plotField")
-    field = string(p.plotField);
+    field = lower(string(p.plotField));
 end
 
 switch field
@@ -57,8 +57,12 @@ if isempty(hCb) || ~isvalid(hCb)
     hCb = colorbar;
 end
 
-title(sprintf("Gray-Scott: %s-field | t = %.2f | F=%.3f, k=%.3f", ...
-    fieldName, t, p.F, p.k));
+Ftxt = "?"; ktxt = "?";
+if isfield(p,"F"), Ftxt = sprintf("%.3f", p.F); end
+if isfield(p,"k"), ktxt = sprintf("%.3f", p.k); end
+
+title(sprintf("Gray-Scott: %s-field | t = %.2f | F=%s, k=%s", ...
+    fieldName, t, Ftxt, ktxt), "Interpreter","none");
 
 drawnow;
 end

@@ -27,7 +27,11 @@ N = p.Nx * p.Ny;
 assert(numel(u) == N, "exportFrame: numel(u) must equal Nx*Ny.");
 assert(numel(v) == N, "exportFrame: numel(v) must equal Nx*Ny.");
 
-assert(isfolder(outDir), "exportFrame: output directory does not exist.");
+outDir = string(outDir);
+assert(strlength(outDir) > 0, "exportFrame: outDir must be a nonempty path.");
+if ~isfolder(outDir)
+    mkdir(outDir);
+end
 
 U = reshape(u, p.Ny, p.Nx);
 V = reshape(v, p.Ny, p.Nx);
@@ -67,12 +71,18 @@ else
     set(hIm, "CData", data2D);
 end
 
-title(hAx, sprintf("Gray-Scott: %s-field | t = %.2f | F=%.3f, k=%.3f", ...
-    fieldName, t, p.F, p.k), "Interpreter", "none");
+Ftxt = "?";
+ktxt = "?";
+if isfield(p,"F"), Ftxt = sprintf("%.3f", p.F); end
+if isfield(p,"k"), ktxt = sprintf("%.3f", p.k); end
+
+title(hAx, sprintf("Gray-Scott: %s-field | t = %.2f | F=%s, k=%s", ...
+    fieldName, t, Ftxt, ktxt), "Interpreter", "none");
 
 drawnow;
 
-filename = sprintf("%s_t_%07.2f.png", fieldName, t);
+t_ms = round(1000 * double(t));
+filename = sprintf("%s_t_%010dms.png", fieldName, t_ms);
 filepath = fullfile(outDir, filename);
 
 % More robust for PNG than saveas (especially with invisible figures)

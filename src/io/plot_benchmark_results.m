@@ -23,7 +23,7 @@ if ~exist(outFigDir,"dir"); mkdir(outFigDir); end
 T = readtable(csvPath);
 
 % Basic validation
-reqCols = ["mode","Nx","Ny","sec_per_step_median","total_sec_median"];
+reqCols = ["mode","diffusionMode","Nx","Ny","sec_per_step_median"];
 for k = 1:numel(reqCols)
     assert(any(string(T.Properties.VariableNames)==reqCols(k)), ...
         "CSV missing required column: %s", reqCols(k));
@@ -34,6 +34,7 @@ T.DoF = double(T.Nx) .* double(T.Ny);
 
 % Ensure consistent string columns
 T.mode   = string(T.mode);
+T.diffusionMode = lower(strtrim(T.diffusionMode));
 
 % We will make plots per mode
 modes = ["compute_off","render_on"];
@@ -43,6 +44,12 @@ for mi = 1:numel(modes)
 
     Ti = T(T.mode == mode, :);
     assert(~isempty(Ti), "No rows found for mode=%s", mode);
+
+    solversHere = unique(Ti.diffusionMode);
+    needSolvers = ["matrix","stencil"];
+    assert(all(ismember(needSolvers, solversHere)), ...
+        "Mode=%s must contain both solvers: %s. Found: %s", ...
+        mode, join(needSolvers,", "), join(solversHere,", "));
 
     % Split by solver
     Tm = Ti(Ti.diffusionMode == "matrix", :);

@@ -1,7 +1,21 @@
-clear; clc; close all;
+clc;
+close all force;
 
-% Root of project = folder where this script lives
-rootDir = fileparts(fileparts(mfilename("fullpath"))); % go up from scripts/ to project root
+% Project root (works even if you run this from a different folder).
+% We define root as the parent of the folder that contains this file (scripts/).
+thisFile = mfilename("fullpath");
+if strlength(thisFile) == 0
+    % Fallback when mfilename is empty (e.g., Run Section / unusual execution contexts)
+    thisFile = matlab.desktop.editor.getActiveFilename();
+end
+assert(strlength(thisFile) > 0, "Cannot locate run_model_class.m on disk.");
+% Project root = folder where this script lives
+thisFile = mfilename("fullpath");
+if strlength(thisFile) == 0
+    thisFile = matlab.desktop.editor.getActiveFilename();
+end
+assert(strlength(thisFile) > 0, "Cannot locate run_model_class.m on disk.");
+rootDir = fileparts(thisFile);
 
 % Ensure src is visible (absolute path, no cd side-effect)
 addpath(genpath(fullfile(rootDir, "src")));
@@ -16,10 +30,17 @@ p = finalizeParams(p);
 timestamp = datestr(now, "yyyy-mm-dd_HH-MM-SS");
 runName   = timestamp + "_" + p.caseName;
 
-% Output directory (absolute)
-outDir = fullfile(rootDir, "results", runName);
+% Output directory (absolute, created safely)
+resultsDir = fullfile(rootDir, "results");
+if ~exist(resultsDir, "dir")
+    [ok,msg] = mkdir(resultsDir);
+    assert(ok, "Failed to create results directory: %s", msg);
+end
+
+outDir = fullfile(resultsDir, runName);
 if ~exist(outDir, "dir")
-    mkdir(outDir);
+    [ok,msg] = mkdir(outDir);
+    assert(ok, "Failed to create run directory: %s", msg);
 end
 
 % Save metadata for reproducibility

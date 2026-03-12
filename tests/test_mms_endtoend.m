@@ -29,17 +29,21 @@ p.savePngEvery = 0;  % disable PNG export
 grid = buildGrid(p);
 L = buildLaplacian2D(p, grid);
 
+op = struct();
+op.mode = "matrix";
+op.L = L;
+op.grid = grid;
+
 % Build 2D coordinate arrays (Ny x Nx)
 [X, Y] = meshgrid(grid.x, grid.y);
+
+% Override grid coordinates for MMS source evaluation
+op.grid.x = X;
+op.grid.y = Y;
 
 % Manufactured solution and source terms
 m = mms_targets();
 s = mms_sources(p);
-
-% Provide grid coordinates to eulerStep via p.grid
-p.grid = struct();
-p.grid.x = X;
-p.grid.y = Y;
 
 % Source function used inside eulerStep (returns 2D arrays)
 p.sourceFcn = @(x,y,t,pp) deal(s.su(x,y,t), s.sv(x,y,t));
@@ -57,11 +61,10 @@ if abs(Nt - round(Nt)) > 1e-12
 end
 Nt = round(Nt);
 
-S = []; 
 t = 0.0;
 
 for n = 1:Nt
-    [u, v, info] = eulerStep(u, v, L, S, p, t);
+    [u, v, info] = eulerStep(u, v, op, p, t);
 
     if isfield(info,"hasNaNInf") && info.hasNaNInf
         error("NaN/Inf detected during MMS run at step %d.", n);

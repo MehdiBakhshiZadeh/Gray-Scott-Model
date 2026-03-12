@@ -17,7 +17,7 @@ thisDir = fileparts(mfilename("fullpath"));      % .../tests
 rootDir = fullfile(thisDir, "..");              % project root
 
 % Add required paths (absolute)
-addpath(fullfile(rootDir, "src"));
+addpath(genpath(fullfile(rootDir, "src")));
 addpath(fullfile(thisDir, "utils"));
 
 % Ensure output directory exists
@@ -33,9 +33,14 @@ p.dt = 0.2;
 p.plotEvery = 0;     % disable plotting
 p.savePngEvery = 0;  % disable PNG export
 
-% Spatial operators (fixed across runs)
+% Spatial operator (fixed across runs)
 grid = buildGrid(p);
 L = buildLaplacian2D(p, grid);
+
+op = struct();
+op.mode = "matrix";
+op.L = L;
+op.grid = grid;
 
 % Initial condition (fixed seed)
 rng(p.seed, "twister");
@@ -44,12 +49,12 @@ u0 = U0(:);
 v0 = V0(:);
 
 % Run with dt
-[uA, vA] = simulateToFinal(u0, v0, L, p);
+[uA, vA] = simulateToFinal(u0, v0, op, p);
 
 % Run with dt/2
 p2 = p;
 p2.dt = p.dt / 2;
-[uB, vB] = simulateToFinal(u0, v0, L, p2);
+[uB, vB] = simulateToFinal(u0, v0, op, p2);
 
 % Difference field (v)
 dv = vA - vB;
@@ -78,7 +83,7 @@ err2  = norm(dv, 2) / sqrt(numel(dv));
 errInf = norm(dv, inf);
 fprintf("Saved figures/verification/timestep_halving_diffV.png | RMS=%.3e, inf=%.3e\n", err2, errInf);
 
-function [u, v] = simulateToFinal(u, v, L, p)
+function [u, v] = simulateToFinal(u, v, op, p)
 %SIMULATETOFINAL  Minimal time loop without plotting/export.
 
 Nt = p.T / p.dt;
@@ -86,7 +91,7 @@ assert(abs(Nt - round(Nt)) < 1e-12, "T must be divisible by dt.");
 Nt = round(Nt);
 
 for n = 1:Nt
-    [u, v, info] = eulerStep(u, v, L, p);
+    [u, v, info] = eulerStep(u, v, op, p);
     if info.hasNaNInf
         error("NaN/Inf detected at step %d.", n);
     end

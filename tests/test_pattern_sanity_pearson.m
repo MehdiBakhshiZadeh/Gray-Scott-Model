@@ -61,7 +61,7 @@ for icase = 1:numel(cases)
     g = buildGrid(p);
     L = buildLaplacian2D(p, g);
 
-    [U0, V0] = pearsonInitialCondition(p);
+    [U0, V0] = initialCondition(p);
     u = U0(:);
     v = V0(:);
 

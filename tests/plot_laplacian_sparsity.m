@@ -21,9 +21,13 @@ grid = buildGrid(p);
 L = buildLaplacian2D(p, grid);
 
 % Plot sparsity pattern
-figure;
+fig = figure("Color","w");
+ax = axes(fig);
+
 spy(L);
-title("Sparsity pattern of 2D Laplacian (periodic BC)");
+title("Sparsity pattern of 2D Laplacian (periodic BC)", "Interpreter","none");
+
+set(ax, "FontSize", 12, "LineWidth", 1.0, "Box", "on");
 
 % Ensure output directories exist
 figDir = fullfile(rootDir, "figures", "verification");

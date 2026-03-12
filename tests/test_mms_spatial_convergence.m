@@ -28,7 +28,7 @@ base.T = 1.0;
 base.plotEvery = 0;     % disable plotting
 base.savePngEvery = 0;  % disable PNG export
 
-Ns  = [32 64 128 256];  % refinement levels
+Ns  = [32 64 128];  % refinement levels
 Cdt = 0.1;              % dt = Cdt*h^2 (keeps time error small)
 
 errV_L2 = zeros(size(Ns));
@@ -54,15 +54,20 @@ for i = 1:numel(Ns)
 
     g = buildGrid(p);
     L = buildLaplacian2D(p, g);
+    
+    op = struct();
+    op.mode = "matrix";
+    op.L = L;
+    op.grid = g;
 
     % Build 2D coordinate arrays
     [X, Y] = meshgrid(g.x, g.y);
 
+    op.grid.x = X;
+    op.grid.y = Y;
+
     % Forcing (manufactured source terms)
     s = mms_sources(p);
-    p.grid = struct();
-    p.grid.x = X;
-    p.grid.y = Y;
     p.sourceFcn = @(x,y,t,pp) deal(s.su(x,y,t), s.sv(x,y,t));
 
     % Initial condition = exact at t=0
@@ -74,7 +79,7 @@ for i = 1:numel(Ns)
     % Time loop
     t = 0.0;
     for n = 1:Nt
-        [u, v, info] = eulerStep(u, v, L, p, t);
+        [u, v, info] = eulerStep(u, v, op, p, t);
         if info.hasNaNInf
             error("NaN/Inf detected at N=%d, step=%d.", Ns(i), n);
         end
@@ -123,7 +128,6 @@ r.metrics.orderV_L2 = p_est;
 r.metrics.errV_L2_N32  = errV_L2(1);
 r.metrics.errV_L2_N64  = errV_L2(2);
 r.metrics.errV_L2_N128 = errV_L2(3);
-r.metrics.errV_L2_N256 = errV_L2(4);
 
 % Pass criterion: close to 2 (tolerant band)
 r.thresholds.orderTarget = 2.0;

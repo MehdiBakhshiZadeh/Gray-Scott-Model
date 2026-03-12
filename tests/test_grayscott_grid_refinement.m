@@ -50,6 +50,11 @@ for i = 1:numel(Ns)
 
     g = buildGrid(p);
     L = buildLaplacian2D(p, g);
+    
+    op = struct();
+    op.mode = "matrix";
+    op.L = L;
+    op.grid = g;
 
     rng(p.seed, "twister");
     [U0, V0] = initialCondition(p);
@@ -57,7 +62,7 @@ for i = 1:numel(Ns)
     v = V0(:);
 
     for n = 1:Nt
-        [u, v, info] = eulerStep(u, v, L, p);
+        [u, v, info] = eulerStep(u, v, op, p);
         if info.hasNaNInf
             error("NaN/Inf detected at N=%d, step=%d.", Ns(i), n);
         end

@@ -11,9 +11,14 @@ p.dt = 0.2;
 p.plotEvery = 0;     % disable plotting
 p.savePngEvery = 0;  % disable PNG export
 
-% Build spatial operators once (same grid/operator for all time step sizes)
+% Build spatial operator once (same grid/operator for all time step sizes)
 grid = buildGrid(p);
 L = buildLaplacian2D(p, grid);
+
+op = struct();
+op.mode = "matrix";
+op.L = L;
+op.grid = grid;
 
 % Initial condition (fixed seed)
 rng(p.seed, "twister");
@@ -30,9 +35,9 @@ p2.dt = p.dt / 2;
 p4 = p;
 p4.dt = p.dt / 4;
 
-[u1, v1] = simulateToFinal(u0, v0, L, p1);
-[u2, v2] = simulateToFinal(u0, v0, L, p2);
-[u4, v4] = simulateToFinal(u0, v0, L, p4);
+[u1, v1] = simulateToFinal(u0, v0, op, p1);
+[u2, v2] = simulateToFinal(u0, v0, op, p2);
+[u4, v4] = simulateToFinal(u0, v0, op, p4);
 
 % Compare v-field (commonly used for Gray–Scott patterns)
 d12 = v1 - v2;
@@ -71,7 +76,7 @@ r.notes = sprintf("T=%.2f, dt=%.3f: rms12=%.3e, rms24=%.3e, inf12=%.3e, inf24=%.
     p.T, p.dt, rms12, rms24, inf12, inf24);
 end
 
-function [u, v] = simulateToFinal(u, v, L, p)
+function [u, v] = simulateToFinal(u, v, op, p)
 %SIMULATETOFINAL  Minimal time loop without plotting/export.
 
 Nt = p.T / p.dt;
@@ -80,11 +85,10 @@ if abs(Nt - round(Nt)) > 1e-12
 end
 Nt = round(Nt);
 
-S = []; % matrix mode (no stencil operator here)
 
 for n = 1:Nt
     t = (n-1) * p.dt;  % current time before the Euler update
-    [u, v, info] = eulerStep(u, v, L, S, p, t);
+    [u, v, info] = eulerStep(u, v, op, p, t);
 
     if isfield(info,"hasNaNInf") && info.hasNaNInf
         error("NaN/Inf detected at step %d.", n);

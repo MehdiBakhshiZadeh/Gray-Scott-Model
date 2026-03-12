@@ -26,3 +26,5 @@ src/results_test/
 *.synctex.gz
 *.fdb_latexmk
 *.fls
+
+report/tubaf/

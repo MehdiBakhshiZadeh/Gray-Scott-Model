@@ -1,8 +1,8 @@
-function test_boundary_conditions()
+function r = test_boundary_conditions()
 %TEST_BOUNDARY_CONDITIONS Quantitative verification of Dirichlet/Neumann BC.
 %
 % This test verifies that boundary conditions are enforced strongly after
-% each explicit Euler update (Option A), and that enforcement is consistent
+% each explicit Euler update, and that enforcement is consistent
 % across all solver modes:
 %   - "matrix"  : sparse Laplacian
 %   - "stencil" : matrix-free 5-point stencil
@@ -121,6 +121,11 @@ for m = 1:numel(modes)
     end
 end
 
-disp("test_boundary_conditions: PASSED");
+r = makeResult("test_boundary_conditions", p);
+r.grid = [p.Nx, p.Ny];
+r.dt   = p.dt;
+r.T    = p.T;
+r.pass = true;
+r.notes = "Dirichlet, Neumann, and mixed BC checks passed for matrix, stencil, and full modes.";
 
 end

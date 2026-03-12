@@ -136,14 +136,17 @@ Nt = round(Nt);
 g = buildGrid(p);
 L = buildLaplacian2D(p, g);
 
-S = [];   % matrix diffusion in verification tests
+op = struct();
+op.mode = "matrix";
+op.L = L;
+op.grid = g;
 
 u = u0;
 v = v0;
 
 t = 0.0;
 for n = 1:Nt
-    [u, v, info] = eulerStep(u, v, L, S, p, t);
+    [u, v, info] = eulerStep(u, v, op, p, t);
 
     if isfield(info,"hasNaNInf") && info.hasNaNInf
         error("NaN/Inf detected at step %d for dt=%.6g.", n, dt);

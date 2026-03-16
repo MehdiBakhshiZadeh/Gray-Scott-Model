@@ -3,7 +3,7 @@ function L = buildLaplacian2D(p, grid)
 %
 %   L = BUILDLAPLACIAN2D(p, grid) returns the sparse matrix that applies the
 %   standard second-order (5-point) finite-difference Laplacian on a uniform 2D grid 
-%   with periodic connectivity (operator-level periodicity).
+%   with periodic connectivity.
 %
 %   Inputs:
 %     p.Nx, p.Ny : number of grid points in x and y (integers >= 3)

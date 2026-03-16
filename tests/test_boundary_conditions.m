@@ -19,7 +19,7 @@ modes = ["matrix","stencil","full"];
 for m = 1:numel(modes)
     mode = modes(m);
 
-    % --- Parameters and grid size (Option A from report) ---
+    % --- Parameters and grid size ---
     p = defaultParams();
     p.diffusionMode = mode;
 
@@ -32,7 +32,7 @@ for m = 1:numel(modes)
 
     p = finalizeParams(p);
 
-    % Build model (creates BCcache from initial condition)
+    % Build model 
     grid  = buildGrid(p);
     model = GrayScottModel(p, grid);
 

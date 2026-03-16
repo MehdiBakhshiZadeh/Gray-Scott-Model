@@ -3,7 +3,7 @@ function L1 = buildLaplacian1D_periodic(N)
 %
 %   L1 = BUILDLAPLACIAN1D_PERIODIC(N) returns the N-by-N sparse matrix that
 %   approximates the 1D operator d^2/dx^2 using the standard centered stencil:
-%       u_xx(i) ? u(i-1) - 2u(i) + u(i+1)
+%       u_xx(i) = u(i-1) - 2u(i) + u(i+1)
 %   with periodic wrap-around at the boundaries.
 %
 %   Important:

@@ -50,12 +50,12 @@ end
 % --- Time integration ---
 % Smaller dt improves stability for explicit diffusion but increases runtime.
 p.dt = 0.5;     % time step size
-p.T  = 500;   % final simulation time
+p.T  = 500;     % final simulation time
 
 % --- Initial condition settings ---
-p.seed       = 1;     % RNG seed used for reproducible initialization
+p.seed       = 1;          % RNG seed used for reproducible initialization
 p.icType     = "baseline"; % "baseline" | "pearson"
-p.icPerturb  = 0.02;  % amplitude of random noise (if used)
+p.icPerturb  = 0.02;       % amplitude of random noise (if used)
 
 % Diffusion operator mode:
 %   "matrix"  : sparse Laplacian
@@ -65,10 +65,10 @@ p.diffusionMode = "matrix";
 
 
 % --- Output / visualization control ---
-p.caseName      = preset; % label used in results folder naming
+p.caseName      = preset;     % label used in results folder naming
 p.plotField     = "v";        % field shown in live plots ("u" or "v")
 p.plotEvery     = 20;         % update live plot every N steps (0 disables)
-p.savePngEvery  = 50;        % export PNG every N steps (0 disables)
+p.savePngEvery  = 50;         % export PNG every N steps (0 disables)
 
 % --- Preset overrides ---
 switch preset

@@ -2,27 +2,20 @@ clc;
 close all force;
 
 % Project root (works even if you run this from a different folder).
-% We define root as the parent of the folder that contains this file (scripts/).
 thisFile = mfilename("fullpath");
 if strlength(thisFile) == 0
     % Fallback when mfilename is empty (e.g., Run Section / unusual execution contexts)
     thisFile = matlab.desktop.editor.getActiveFilename();
 end
 assert(strlength(thisFile) > 0, "Cannot locate run_model_class.m on disk.");
-% Project root = folder where this script lives
-thisFile = mfilename("fullpath");
-if strlength(thisFile) == 0
-    thisFile = matlab.desktop.editor.getActiveFilename();
-end
-assert(strlength(thisFile) > 0, "Cannot locate run_model_class.m on disk.");
+
 rootDir = fileparts(thisFile);
 
 % Ensure src is visible (absolute path, no cd side-effect)
 addpath(genpath(fullfile(rootDir, "src")));
 
 % Load default parameters + seed
-% Use: p = defaultParams("pearson");
-p = defaultParams();
+p = defaultParams();           % "pearson"| "baseline"
 p.diffusionMode = "stencil";   % "matrix" | "stencil" | "full"
 p = finalizeParams(p);
 
@@ -60,7 +53,7 @@ end
 logPath = fullfile(outDir, "log.txt");
 fid = fopen(logPath, "w");
 assert(fid ~= -1, "Could not open log file: %s", logPath);
-c = onCleanup(@() fclose(fid));
+c = onCleanup(@() fclose(fid)); % script errors out, is closed automatically
 
 fprintf(fid, "Run name: %s\n", runName);
 fprintf(fid, "Timestamp: %s\n", timestamp);
@@ -77,7 +70,7 @@ fprintf(fid, "Output: savePngEvery=%d (0 disables)\n", p.savePngEvery);
 fprintf(fid, "Plot field: %s\n", field);
 fprintf(fid, "Output directory: %s\n", outDir);
 
-% Create model object (builds grid, Laplacian, and initial condition)
+% Create model object (builds Laplacian, and initial condition)
 grid  = buildGrid(p);
 model = GrayScottModel(p, grid);
 
@@ -122,7 +115,7 @@ for n = 1:Nt
         drawnow;
     end
 
-    % ---- Save cadence (matches run_grayscott.m) ----
+    % ---- Save cadence ----
     doSave = (p.savePngEvery > 0) && (mod(model.n, p.savePngEvery) == 0);
     if doSave
         exportFrame(model.u, model.v, p, model.t, outDir);
@@ -132,7 +125,7 @@ end
 % Always export final state once
 exportFrame(model.u, model.v, p, model.t, outDir);
 
-% Optional: save final state for restart / inspection
+% Save final state for restart / inspection
 save(fullfile(outDir, "final_state.mat"), "model", "p");
 
 disp("Results saved in:");

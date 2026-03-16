@@ -21,9 +21,8 @@ function [u, v] = applyBoundaryConditions(u, v, p, grid, BCcache)
 %     top    : (U(Ny,:) - U(Ny-1,:))/ hy = g_top
 %
 %   Periodic:
-%     For Option A enforcement, periodic does not require overwriting
-%     because the diffusion operator is already periodic. This function
-%     leaves periodic sides unchanged.
+%     Priodic does not require overwriting, because the diffusion operator 
+%     is already periodic. This function leaves periodic sides unchanged.
 %
 % Inputs:
 %   u, v     : state vectors (Nx*Ny x 1)

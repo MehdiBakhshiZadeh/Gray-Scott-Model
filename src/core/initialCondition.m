@@ -6,7 +6,7 @@ function [U, V] = initialCondition(p)
 %
 %   Supported initial-condition types:
 %     - p.icType = "baseline":
-%         A centered square patch is set to U=0.50 and V=0.25.
+%         A centered 10-by-10 square patch is set to U=0.50 and V=0.25.
 %     - p.icType = "pearson":
 %         A centered 20-by-20 square patch is set to U=0.50 and V=0.25.
 %
@@ -50,30 +50,25 @@ end
 
 switch icType
     case "baseline"
-        % Centered square patch (approx. 21x21 when r=10)
-        r = 10;
-        ix = max(1, cx-r) : min(Nx, cx+r);
-        iy = max(1, cy-r) : min(Ny, cy+r);
-
-        U(iy, ix) = 0.50;
-        V(iy, ix) = 0.25;
+        patch = 10;   % 10x10 square
 
     case "pearson"
-        % Pearson-style 20x20 square patch at the center
-        patch = 20;
-        ix = (cx - patch/2) : (cx + patch/2 - 1);
-        iy = (cy - patch/2) : (cy + patch/2 - 1);
-
-        % Clamp indices if the grid is small
-        ix = max(1, ix(1)) : min(Nx, ix(end));
-        iy = max(1, iy(1)) : min(Ny, iy(end));
-
-        U(iy, ix) = 0.50;
-        V(iy, ix) = 0.25;
+        patch = 20;   % 20x20 square
 
     otherwise
         error("initialCondition: unknown icType '%s'.", icType);
 end
+
+% Centered square patch
+ix = (cx - patch/2) : (cx + patch/2 - 1);
+iy = (cy - patch/2) : (cy + patch/2 - 1);
+
+% Clamp indices if the grid is small
+ix = max(1, ix(1)) : min(Nx, ix(end));
+iy = max(1, iy(1)) : min(Ny, iy(end));
+
+U(iy, ix) = 0.50;
+V(iy, ix) = 0.25;
 
 % Add small random perturbation
 if p.icPerturb > 0

@@ -7,7 +7,6 @@ function r = test_pattern_sanity_pearson()
 %
 %   The test is qualitative: it saves snapshots of the U and V fields
 %   at selected times and a final summary panel for visual inspection.
-%   The test always passes unless the solver becomes unstable.
 
 % --- Locate project folders robustly ---
 thisDir = fileparts(mfilename("fullpath"));   % .../tests

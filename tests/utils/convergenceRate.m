@@ -2,9 +2,9 @@ function [p_est, c0] = convergenceRate(h, E)
 %CONVERGENCERATE Estimate convergence order from error vs grid spacing.
 %
 %   [p_est, c0] = convergenceRate(h, E) fits the model
-%       E(h) ? C * h^p
+%       E(h) ~ C * h^p
 %   using a least-squares fit in log-log space:
-%       log(E) ? c0 + p * log(h)
+%       log(E) ~ c0 + p * log(h)
 %
 %   Inputs:
 %     h : vector of grid spacings (positive)

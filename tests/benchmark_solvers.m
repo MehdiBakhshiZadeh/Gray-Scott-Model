@@ -24,15 +24,34 @@ function benchmark_solvers()
 
 root = fileparts(fileparts(mfilename('fullpath')));
 
-% --- Make sure we use the CURRENT solver in src/, not the shadowed baseline copies ---
-addpath(fullfile(root,'src'));
-if exist(fullfile(root,'src','baseline'),'dir')
+% --- Add project source folders (and avoid shadowed baseline copies) ---
+srcDir = fullfile(root,'src');
+
+% Remove baseline shadowing (if present)
+baseDir = fullfile(srcDir,'baseline');
+if exist(baseDir,'dir')
     try
-        rmpath(fullfile(root,'src','baseline'));
+        rmpath(genpath(baseDir));
     catch
         % ignore
     end
 end
+
+% Prefer organized subfolders when they exist (matches project layout)
+subdirs = {'core','operators','reaction','io'};
+for k = 1:numel(subdirs)
+    d = fullfile(srcDir, subdirs{k});
+    if exist(d,'dir')
+        addpath(d, '-begin');
+    end
+end
+
+% Add top-level src last for compatibility helpers
+if exist(srcDir,'dir')
+    addpath(srcDir, '-end');
+end
+
+rehash;
 
 % Grid policies
 cfg.grids_all        = [32 32; 64 64; 128 128; 256 256; 512 512];
@@ -73,11 +92,16 @@ rowTemplate = struct( ...
     "total_sec_iqr",NaN, ...
     "sec_per_step_median",NaN, ...
     "mem_bytes_est",NaN, ...
+    "mem_bytes_measured",NaN, ...
     "fps_median",NaN ...
 );
 
 rows = rowTemplate([]);
 row_i = 0;
+
+% Cache measured solver memory (whos bytes) per (Nx,Ny,solverMode)
+memCache = containers.Map('KeyType','char','ValueType','double');
+
 
 % ===============================
 % Main benchmark loops
@@ -122,6 +146,15 @@ for mi = 1:numel(modes)
 
             mem_bytes = estimate_memory_bytes(Nx, Ny, solverMode);
 
+% Measured solver-owned memory (workspace bytes). Cached to avoid recomputing for render_on.
+mem_key = sprintf('%dx%d_%s', Nx, Ny, solverMode);
+if isKey(memCache, mem_key)
+    mem_measured = memCache(mem_key);
+else
+    mem_measured = measure_solver_memory_bytes(Nx, Ny, cfg, solverMode, dt_used);
+    memCache(mem_key) = mem_measured;
+end
+
             pe = 0;
             if mode == "render_on"
                 pe = cfg.plotEvery;
@@ -144,6 +177,7 @@ for mi = 1:numel(modes)
             row.total_sec_iqr       = t_iqr;
             row.sec_per_step_median = sec_per_step_med;
             row.mem_bytes_est       = mem_bytes;
+            row.mem_bytes_measured  = mem_measured;
 
             if mode == "render_on"
                 row.fps_median = median(fps_vals);
@@ -163,7 +197,7 @@ T = struct2table(rows);
 colOrder = { ...
     'diffusionMode','mode','Nx','Ny','warmup','nsteps','repeats','dt_used','plotEvery', ...
     'total_sec_median','total_sec_min','total_sec_iqr', ...
-    'sec_per_step_median','mem_bytes_est','fps_median' ...
+    'sec_per_step_median','mem_bytes_est','mem_bytes_measured','fps_median' ...
 };
 T = T(:, colOrder);
 
@@ -355,6 +389,57 @@ try
     return;
 catch
 end
+end
+
+
+function mem_bytes = measure_solver_memory_bytes(Nx, Ny, cfg, solverMode, dt_used)
+%MEASURE_SOLVER_MEMORY_BYTES  Measure solver-owned memory (workspace bytes).
+%
+% This is a practical "real" memory metric that sums the bytes of the core
+% solver variables using WHOS after warmup:
+%   - u, v (state vectors)
+%   - op   (diffusion operator representation)
+%   - grid (grid metadata, coordinate arrays, etc.)
+%   - p    (parameter struct)
+%
+% Notes:
+% - This does NOT include MATLAB process memory, graphics memory, or any
+%   temporary arrays that are created and freed inside a single time step.
+% - Initial condition 2D arrays are cleared before measuring to better match
+%   the steady-state solver footprint.
+
+p = defaultParams();
+p.seed = cfg.seed;
+p.Nx = Nx;
+p.Ny = Ny;
+
+p.plotEvery = 0;
+p.savePngEvery = 0;
+
+p.dt = dt_used;
+p.diffusionMode = solverMode;
+p = finalizeParams(p);
+
+rng(p.seed, "twister");
+grid = buildGrid(p);
+op = build_diffusion_operator(p, grid, solverMode);
+
+[U0, V0] = initialCondition(p);
+u = U0(:);
+v = V0(:);
+clear U0 V0
+
+t = 0.0;
+for i = 1:cfg.warmup
+    [u, v, info] = eulerStep(u, v, op, p, t);
+    if isfield(info,'hasNaNInf') && info.hasNaNInf
+        error("Memory probe aborted: NaN/Inf during warmup (Nx=%d, Ny=%d, solverMode=%s).", Nx, Ny, solverMode);
+    end
+    t = t + p.dt;
+end
+
+S = whos('u','v','op','grid','p');
+mem_bytes = sum([S.bytes]);
 end
 
 function mem_bytes = estimate_memory_bytes(Nx, Ny, solverMode)

@@ -1,6 +1,5 @@
 function out = saveFigWithMeta(figHandle, filepath, meta)
 %SAVEFIGWITHMETA Save a figure and a sidecar metadata .mat file.
-% Compatible with MATLAB R2018b.
 %
 % out.imagePath : path to saved image
 % out.metaPath  : path to saved metadata file
@@ -18,7 +17,7 @@ if nargin < 3 || isempty(meta)
     meta = struct();
 end
 
-% Force filepath to char (critical for R2018b)
+% Force filepath to char
 if isstring(filepath)
     filepath = char(filepath);
 end

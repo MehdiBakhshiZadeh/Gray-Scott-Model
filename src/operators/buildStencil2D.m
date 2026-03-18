@@ -18,8 +18,9 @@ function S = buildStencil2D(p, grid)
 %       inv_hy2    : 1/hy^2
 %
 % Note:
-%   Boundary conditions (Dirichlet/Neumann) are enforced outside the stencil
-%   after each time step. The stencil itself assumes periodic connectivity.
+%   This stencil always assumes periodic connectivity.
+%   Dirichlet/Neumann boundary values are enforced afterward outside the
+%   stencil by overwriting boundary nodes.
 
 % --- Input validation ---
 requiredP = ["Nx","Ny"];

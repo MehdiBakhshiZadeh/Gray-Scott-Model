@@ -1,5 +1,5 @@
-function r = test_variantB_endtoend_equivalence()
-%TEST_VARIANTB_ENDTOEND_EQUIVALENCE
+function r = test_matrix_stencil_endtoend_equivalence()
+%TEST_MATRIX_STENCIL_ENDTOEND_EQUIVALENCE
 % End-to-end comparison using GrayScottModel class:
 % sparse-matrix diffusion vs stencil diffusion.
 %
@@ -7,7 +7,7 @@ function r = test_variantB_endtoend_equivalence()
 % Diffusion operators use periodic connectivity. Physical boundary conditions
 % are enforced after each time step and are not varied in this equivalence test.
 
-testName = "test_variantB_endtoend_equivalence";
+testName = "test_matrix_stencil_endtoend_equivalence";
 r = makeResult(testName, struct());
 r.pass  = false;
 r.notes = "";

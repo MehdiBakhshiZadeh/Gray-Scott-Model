@@ -126,7 +126,13 @@ r.metrics.errU_Linf = euInf;
 r.metrics.errV_L2   = evL2;
 r.metrics.errV_Linf = evInf;
 
-r.pass = isfinite(euL2) && isfinite(euInf) && isfinite(evL2) && isfinite(evInf);
+r.thresholds.errU_L2_max = 5e-3;
+r.thresholds.errV_L2_max = 5e-3;
+
+r.pass = isfinite(euL2) && isfinite(euInf) && ...
+         isfinite(evL2) && isfinite(evInf) && ...
+         (euL2 < r.thresholds.errU_L2_max) && ...
+         (evL2 < r.thresholds.errV_L2_max);
 r.figFiles = figPath;
 r.notes = sprintf("errU(L2)=%.3e, errV(L2)=%.3e", euL2, evL2);
 end

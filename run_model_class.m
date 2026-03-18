@@ -126,7 +126,14 @@ end
 exportFrame(model.u, model.v, p, model.t, outDir);
 
 % Save final state for restart / inspection
-save(fullfile(outDir, "final_state.mat"), "model", "p");
+finalState = struct();
+finalState.u = model.u;
+finalState.v = model.v;
+finalState.t = model.t;
+finalState.n = model.n;
+finalState.p = p;
+
+save(fullfile(outDir, "final_state.mat"), "finalState");
 
 disp("Results saved in:");
 disp(outDir);

@@ -7,15 +7,16 @@ function L = buildLaplacian2D(p, grid)
 %
 %   Inputs:
 %     p.Nx, p.Ny : number of grid points in x and y (integers >= 3)
-%     p.BC       : boundary conditions are handled outside the operator
-%                  (strong enforcement after each time step). The Laplacian
-%                  operator is assembled assuming periodic connectivity.
+%     p.BC       : boundary-condition metadata used elsewhere in the solver.
+%                  This operator itself is always assembled with periodic
+%                  connectivity. Non-periodic Dirichlet/Neumann behavior is
+%                  enforced afterward by overwriting boundary nodes.
 %     grid.hx, grid.hy : grid spacings in x and y (positive)
 %
 %   Output:
 %     L : sparse matrix of size (Nx*Ny) x (Nx*Ny) such that, if U is Ny-by-Nx
 %         and u = U(:) (MATLAB column-major order), then L*u approximates
-%         ?^2 U flattened into a vector.
+%         ∇^2 U flattened into a vector.
 %
 %   Data layout convention:
 %     U(j,i) corresponds to vector index k = j + (i-1)*Ny, with

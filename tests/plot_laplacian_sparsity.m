@@ -13,7 +13,7 @@ thisDir = fileparts(mfilename("fullpath"));      % .../tests
 rootDir = fullfile(thisDir, "..");              % project root
 
 % Add src (absolute path)
-addpath(fullfile(rootDir, "src"));
+addpath(genpath(fullfile(rootDir, "src")));;
 
 % Build Laplacian
 p = defaultParams();

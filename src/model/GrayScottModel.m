@@ -141,10 +141,6 @@ classdef GrayScottModel < handle
 
             mode = string(p.diffusionMode);
 
-            op = struct();
-            op.mode = mode;
-            op.grid = grid;
-
             op = makeOperator(p, grid);
 
             % Ensure required fields exist

@@ -61,7 +61,7 @@ p.icPerturb  = 0.02;       % amplitude of random noise (if used)
 %   "matrix"  : sparse Laplacian
 %   "stencil" : matrix-free stencil
 %   "full"    : dense matrix (small grids only)
-p.diffusionMode = "matrix";
+p.diffusionMode = "stencil";
 
 
 % --- Output / visualization control ---

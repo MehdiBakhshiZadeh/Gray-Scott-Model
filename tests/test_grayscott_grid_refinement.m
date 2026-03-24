@@ -28,7 +28,7 @@ base.plotEvery = 0;     % disable plotting
 base.savePngEvery = 0;  % disable PNG export
 
 % Grid levels (finest grid used as reference)
-Ns  = [64 128 256 512];
+Ns  = [64 128 256 512 1024];
 dt0 = 0.01;   % baseline dt for N=64 (coarsest grid)
 
 U = cell(size(Ns));
@@ -164,7 +164,7 @@ r.metrics.Eu = Eu;
 r.metrics.Ev = Ev;
 
 % Pass criteria (simple, defensible)
-r.thresholds.minOrder = 0.8;
+r.thresholds.minOrder = 1.5;
 
 decreaseU = all(diff(Eu) < 0);
 decreaseV = all(diff(Ev) < 0);

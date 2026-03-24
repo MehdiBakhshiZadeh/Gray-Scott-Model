@@ -9,8 +9,17 @@ function r = test_mms_operator_convergence()
 
 % Locate project folders relative to this file
 thisDir = fileparts(mfilename("fullpath"));   % .../tests
-rootDir = fullfile(thisDir, "..");            % project root
-figDir  = fullfile(rootDir, "figures", "verification");
+rootDir = fileparts(thisDir);                 % project root
+
+% Make this test runnable independently
+if isempty(which("defaultParams"))
+    addpath(rootDir);
+    addpath(genpath(fullfile(rootDir, "src")));
+    addpath(genpath(fullfile(rootDir, "tests")));
+end
+
+% Save figures in the main project figures folder
+figDir = fullfile(rootDir, "figures", "verification");
 
 % Ensure output directory exists
 if ~exist(figDir, "dir")

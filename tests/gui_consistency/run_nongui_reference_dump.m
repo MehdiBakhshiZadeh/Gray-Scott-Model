@@ -16,7 +16,7 @@ rootDir  = fileparts(fileparts(fileparts(thisFile)));
 addpath(genpath(fullfile(rootDir, "src")));
 
 % ---- Load and finalize parameters exactly like non-GUI runner ----
-p = defaultParams();
+p = defaultParams("pearson");
 p = finalizeParams(p);
 
 % ---- Consistency test settings (chosen to match your defaults) ----

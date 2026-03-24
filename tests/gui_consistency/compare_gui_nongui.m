@@ -126,15 +126,45 @@ if haveSnapGUI
     Nx = A.p.Nx; Ny = A.p.Ny;
     dU = reshape(B.snap.us - A.snap.us, Ny, Nx);
 
-    f = figure("Visible","off");
-    imagesc(dU); axis image; colorbar;
-    title(sprintf("GUI - nonGUI difference (snapshot u), relL2=%.3e, max=%.3e", ...
+    f = figure("Visible","off", "Color","w");
+    ax = axes(f);
+
+    imagesc(ax, dU);
+    axis(ax, "image");
+    cb = colorbar(ax); %#ok<NASGU>
+
+    title(ax, sprintf("GUI - nonGUI difference (snapshot u), relL2=%.3e, max=%.3e", ...
         m_us.relL2, m_us.maxAbs));
+    xlabel(ax, "x-index");
+    ylabel(ax, "y-index");
+
+    % Force report-friendly white styling independent of MATLAB theme
+    set(ax, ...
+        "Color", "w", ...
+        "XColor", "k", ...
+        "YColor", "k", ...
+        "FontSize", 16, ...
+        "LineWidth", 1.2, ...
+        "Box", "on");
+
+    set(get(ax, "Title"),  "Color", "k", "FontSize", 18);
+    set(get(ax, "XLabel"), "Color", "k", "FontSize", 16);
+    set(get(ax, "YLabel"), "Color", "k", "FontSize", 16);
 
     figDir = fullfile(rootDir, "figures", "verification");
     if ~exist(figDir,"dir"), mkdir(figDir); end
     figPath = fullfile(figDir, "gui_consistency.png");
-    exportgraphics(f, figPath, "Resolution", 200);
+
+    % Better contrast for a zero-difference field
+    caxis(ax, [-1 1]);
+
+    meta = struct();
+    meta.test = "gui_consistency";
+    meta.stage = "snapshot_u_difference";
+    meta.relL2 = m_us.relL2;
+    meta.maxAbs = m_us.maxAbs;
+    
+    saveFigWithMeta(f, figPath, meta);
     close(f);
 end
 

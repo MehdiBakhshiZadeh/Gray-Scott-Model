@@ -9,8 +9,6 @@ figures/verification/
 tests/figures/
 figures_test/
 
-# Large files
-*.zip
 
 # OS
 .DS_Store

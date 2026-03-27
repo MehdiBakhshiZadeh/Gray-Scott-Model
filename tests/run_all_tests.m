@@ -2,7 +2,7 @@ clear; clc; close all;
 
 % RUN_ALL_TESTS  Execute the verification test suite.
 %
-%   This script runs the verification tests in the tests folder.
+%   This script runs the core verification tests in the tests folder.
 %   Each test is executed independently and returns a result structure
 %   indicating pass/fail status and notes.
 %
@@ -19,10 +19,10 @@ thisFile    = mfilename("fullpath");
 testsDir    = fileparts(thisFile);
 projectRoot = fileparts(testsDir);
 
-% Add required paths
+% Add required project paths
 addpath(projectRoot);
 addpath(genpath(fullfile(projectRoot, "src")));
-addpath(genpath(fullfile(projectRoot, "tests")));
+addpath(genpath(testsDir));
 
 % Create output folder safely
 outDir = fullfile(projectRoot, "results", "tests");
@@ -58,11 +58,13 @@ for i = 1:numel(tests)
     catch ME
         r = makeResult(testName, struct());
         r.pass  = false;
+
         whereText = "";
         if ~isempty(ME.stack)
             whereText = " [" + string(ME.stack(1).name) + ...
                 ", line " + string(ME.stack(1).line) + "]";
         end
+
         r.notes = "Crashed: " + string(ME.message) + whereText;
     end
 

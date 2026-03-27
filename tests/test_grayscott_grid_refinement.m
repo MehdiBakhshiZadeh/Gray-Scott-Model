@@ -1,19 +1,11 @@
 function r = test_grayscott_grid_refinement()
-%TEST_GRAYSCOTT_GRID_REFINEMENT  Grid refinement study for Gray–Scott (explicit Euler).
-%
-%   This test performs a grid refinement study for the Gray–Scott model using
-%   explicit Euler time integration. The time step is scaled as dt ~ h^2 to
-%   limit time-discretization effects.
-%
-%   Because Gray–Scott is nonlinear and pattern-forming, strict second-order
-%   convergence of the solution fields in L2 is not guaranteed (phase shifts
-%   can dominate). Therefore, this test:
-%     - checks that refinement reduces differences relative to the finest grid,
-%     - reports observed convergence rates for reference,
-%     - uses a simple, defensible pass criterion.
+%TEST_GRAYSCOTT_GRID_REFINEMENT
+% Grid refinement study for Gray-Scott with a smooth, grid-independent
+% initial condition. Designed to measure observed convergence more cleanly
+% than the original pattern-seeding setup.
 
 % --- Locate project folders robustly ---
-thisDir = fileparts(mfilename("fullpath"));   % .../tests
+thisDir = fileparts(mfilename("fullpath"));
 rootDir = fullfile(thisDir, "..");
 figDir  = fullfile(rootDir, "figures", "verification");
 
@@ -23,13 +15,14 @@ end
 
 % --- Base parameters ---
 base = defaultParams();
-base.T = 1.0;
-base.plotEvery = 0;     % disable plotting
-base.savePngEvery = 0;  % disable PNG export
+base.T = 0.2;           % shorter time reduces phase-separation effects
+base.plotEvery = 0;
+base.savePngEvery = 0;
+base.icPerturb = 0.0;   % IMPORTANT: no random noise in this test
 
 % Grid levels (finest grid used as reference)
-Ns  = [64 128 256 512 1024];
-dt0 = 0.01;   % baseline dt for N=64 (coarsest grid)
+Ns  = [64 128 256 512 1024 2048];
+dt0 = 0.01;   % dt at N=64, then dt ~ h^2
 
 U = cell(size(Ns));
 V = cell(size(Ns));
@@ -50,14 +43,16 @@ for i = 1:numel(Ns)
 
     g = buildGrid(p);
     L = buildLaplacian2D(p, g);
-    
+
     op = struct();
     op.mode = "matrix";
     op.L = L;
     op.grid = g;
 
-    rng(p.seed, "twister");
-    [U0, V0] = initialCondition(p);
+    % Smooth, grid-independent IC in physical coordinates
+    [X, Y] = meshgrid(g.x, g.y);
+    [U0, V0] = smoothGrayScottIC(X, Y, p);
+
     u = U0(:);
     v = V0(:);
 
@@ -134,7 +129,7 @@ loglog(hs, Ev, "s-", "LineWidth", 1.6, "MarkerSize", 7);
 grid on;
 xlabel("h");
 ylabel("L2 difference vs finest-grid reference");
-title(sprintf("Gray–Scott grid refinement (Euler, T=%.1f): pU=%.2f, pV=%.2f", ...
+title(sprintf("Gray-Scott smooth grid refinement (Euler, T=%.2f): pU=%.2f, pV=%.2f", ...
     base.T, pU, pV), "Interpreter", "none");
 legend("u", "v", "Location", "southwest");
 
@@ -148,6 +143,7 @@ meta.Ev = Ev;
 meta.interpMethod = interpMethod;
 meta.T = base.T;
 meta.dtScaling = "dt ~ h^2";
+meta.icType = "smooth grid-independent Gaussian";
 
 outFig = fullfile(figDir, "grayscott_grid_refinement.png");
 saveFigWithMeta(fig, outFig, meta);
@@ -163,7 +159,6 @@ r.metrics.hs = hs;
 r.metrics.Eu = Eu;
 r.metrics.Ev = Ev;
 
-% Pass criteria (simple, defensible)
 r.thresholds.minOrder = 1.5;
 
 decreaseU = all(diff(Eu) < 0);
@@ -172,5 +167,20 @@ orderOK   = (pU >= r.thresholds.minOrder) && (pV >= r.thresholds.minOrder);
 
 r.pass = decreaseU && decreaseV && orderOK;
 r.figFiles = outFig;
-r.notes = sprintf("Euler with dt~h^2, ref N=%d: pU=%.3f, pV=%.3f", Ns(refIdx), pU, pV);
+r.notes = sprintf("Smooth IC, Euler with dt~h^2, ref N=%d: pU=%.3f, pV=%.3f", ...
+    Ns(refIdx), pU, pV);
+end
+
+function [U0, V0] = smoothGrayScottIC(X, Y, p)
+% Smooth grid-independent initial condition in physical coordinates.
+
+xc = 0.5 * p.Lx;
+yc = 0.5 * p.Ly;
+sigma = 0.08 * min(p.Lx, p.Ly);
+
+R2 = (X - xc).^2 + (Y - yc).^2;
+phi = exp(-R2 / (2 * sigma^2));
+
+U0 = 1.0 - 0.50 * phi;
+V0 = 0.25 * phi;
 end

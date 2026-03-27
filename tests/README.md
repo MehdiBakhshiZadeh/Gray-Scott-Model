@@ -4,7 +4,7 @@ This folder contains the verification, consistency, validation-oriented sanity, 
 
 ## Purpose
 
-The tests in this folder are intended to document and reproduce the main verification results reported in Chapter 7 of the report. They cover operator accuracy, time-step behavior, boundary-condition enforcement, solver-mode equivalence, GUI/non-GUI consistency, supplementary structural checks, and a long-time Pearson-type pattern sanity study.
+The tests in this folder are intended to document and reproduce the main numerical checks reported in the verification chapter of the report. They cover manufactured-solution verification, operator accuracy, time-step convergence, explicit-Euler stability-limit behavior, boundary-condition enforcement, solver-mode equivalence, GUI/non-GUI consistency, supplementary structural checks, and a Pearson-type pattern sanity study for the nonlinear Gray–Scott system.
 
 ## Recommended execution environment
 

@@ -49,7 +49,7 @@ if isfield(p, "plotField")
     field = lower(string(p.plotField));
 end
 
-% Write a readable log file (safe close)
+% Write a readable log file
 logPath = fullfile(outDir, "log.txt");
 fid = fopen(logPath, "w");
 assert(fid ~= -1, "Could not open log file: %s", logPath);

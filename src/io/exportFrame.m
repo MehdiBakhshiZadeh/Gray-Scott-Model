@@ -85,6 +85,6 @@ t_ms = round(1000 * double(t));
 filename = sprintf("%s_t_%010dms.png", fieldName, t_ms);
 filepath = fullfile(outDir, filename);
 
-% More robust for PNG than saveas (especially with invisible figures)
+% More robust for PNG than saveas
 print(hFig, filepath, "-dpng", "-r300");
 end

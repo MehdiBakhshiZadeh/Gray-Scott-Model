@@ -85,9 +85,6 @@ switch preset
         p.icPerturb  = 0.01;   % ~1% noise as reported in the paper
         p.plotField  = "u";    % Pearson often visualizes the u-field
 
-        % Keep dt conservative by default for stability
-        % p.dt = 1.0;  % Enable only after stability testing
-
     otherwise
         error("defaultParams: unknown preset '%s'. Use 'baseline' or 'pearson'.", preset);
 end

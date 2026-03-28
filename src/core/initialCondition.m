@@ -39,7 +39,7 @@ Nx = p.Nx;
 U = ones(Ny, Nx);
 V = zeros(Ny, Nx);
 
-% Center index (used for both presets)
+% Center index
 cx = floor(Nx/2);
 cy = floor(Ny/2);
 

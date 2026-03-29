@@ -1,6 +1,5 @@
-# MATLAB autosave and data
+# MATLAB autosave files
 *.asv
-*.mat
 
 # Keep the results folder, but ignore generated contents
 results/*

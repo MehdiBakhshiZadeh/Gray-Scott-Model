@@ -1,20 +1,23 @@
-# MATLAB
+# MATLAB autosave and data
 *.asv
 *.mat
 
-# Results and generated data
-results/
+# Keep the results folder, but ignore generated contents
+results/*
+!results/README.md
+
+# Ignore optional archive folder
 Archive/
+
+# Ignore generated test/result folders
+src/results_test/
 figures/verification/
 tests/figures/
 figures_test/
 
-
-# OS
+# OS files
 .DS_Store
 Thumbs.db
-
-src/results_test/
 
 # LaTeX build artifacts
 *.aux
@@ -25,4 +28,5 @@ src/results_test/
 *.fdb_latexmk
 *.fls
 
+# Local LaTeX template/build folder
 report/tubaf/

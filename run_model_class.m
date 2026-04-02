@@ -53,7 +53,7 @@ end
 logPath = fullfile(outDir, "log.txt");
 fid = fopen(logPath, "w");
 assert(fid ~= -1, "Could not open log file: %s", logPath);
-c = onCleanup(@() fclose(fid)); % script errors out, is closed automatically
+c = onCleanup(@() fclose(fid)); %#ok<NASGU> % script errors out, is closed automatically
 
 fprintf(fid, "Run name: %s\n", runName);
 fprintf(fid, "Timestamp: %s\n", timestamp);
@@ -82,8 +82,21 @@ fprintf(fid, "Steps: Nt=%d\n", Nt);
 
 % Only create a figure when plotting is enabled
 doAnyPlot = (p.plotEvery > 0);
+
+hMainFig = [];
+hMainAx  = [];
+hMainIm  = [];
+hMainCb  = [];
+
 if doAnyPlot
-    figure;
+    hMainFig = figure( ...
+        "MenuBar", "none", ...
+        "ToolBar", "none", ...
+        "NumberTitle", "off", ...
+        "Name", "Gray-Scott Simulation", ...
+        "WindowStyle", "normal");
+
+    hMainAx = axes("Parent", hMainFig);
 end
 
 % ---- Time stepping loop ----
@@ -102,16 +115,26 @@ for n = 1:Nt
 
         switch field
             case "u"
-                imagesc(U); fieldName = "u";
+                data2D = U;
+                fieldName = "u";
             case "v"
-                imagesc(V); fieldName = "v";
+                data2D = V;
+                fieldName = "v";
             otherwise
                 error("Unknown plotField='%s' (use 'u' or 'v')", field);
         end
 
-        axis image; colorbar;
-        title(sprintf("%s-field | t = %.2f | F=%.3f k=%.3f Du=%.2g Dv=%.2g", ...
+        if isempty(hMainIm) || ~isgraphics(hMainIm)
+            hMainIm = imagesc(hMainAx, data2D);
+            axis(hMainAx, "image");
+            hMainCb = colorbar(hMainAx); %#ok<NASGU>
+        else
+            set(hMainIm, "CData", data2D);
+        end
+
+        title(hMainAx, sprintf("%s-field | t = %.2f | F=%.3f k=%.3f Du=%.2g Dv=%.2g", ...
             fieldName, model.t, p.F, p.k, p.Du, p.Dv));
+
         drawnow;
     end
 
@@ -119,6 +142,11 @@ for n = 1:Nt
     doSave = (p.savePngEvery > 0) && (mod(model.n, p.savePngEvery) == 0);
     if doSave
         exportFrame(model.u, model.v, p, model.t, outDir);
+
+        % Force refresh on the visible simulation window after export
+        if doAnyPlot && ~isempty(hMainFig) && isgraphics(hMainFig)
+            drawnow;
+        end
     end
 end
 

@@ -68,7 +68,7 @@ p.diffusionMode = "stencil";
 p.caseName      = preset;     % label used in results folder naming
 p.plotField     = "v";        % field shown in live plots ("u" or "v")
 p.plotEvery     = 20;         % update live plot every N steps (0 disables)
-p.savePngEvery  = 50;         % export PNG every N steps (0 disables)
+p.savePngEvery  = 50;        % export PNG every N steps (0 disables)
 
 % --- Preset overrides ---
 switch preset

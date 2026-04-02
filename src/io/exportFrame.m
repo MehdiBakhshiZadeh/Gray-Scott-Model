@@ -1,5 +1,5 @@
 function exportFrame(u, v, p, t, outDir)
-%EXPORTFRAME  Save a snapshot of the Gray–Scott field as a PNG image.
+%EXPORTFRAME  Save a snapshot of the Gray-Scott field as a PNG image.
 %
 %   exportFrame(u, v, p, t, outDir) writes one PNG file to outDir.
 %   This function is intended for offline output only and does not affect
@@ -53,20 +53,32 @@ switch field
         error("exportFrame: unknown p.plotField='%s'. Use 'u' or 'v'.", field);
 end
 
+% Preserve current figure so that export does not steal focus/state
+oldFig = get(groot, "CurrentFigure");
+
 % --- Reuse an invisible figure for efficiency ---
 persistent hFig hAx hIm hCb
 
 needCreate = isempty(hFig) || ~isgraphics(hFig) || ...
              isempty(hAx)  || ~isgraphics(hAx)  || ...
-             isempty(hIm)  || ~isgraphics(hIm);
+             isempty(hIm)  || ~isgraphics(hIm)  || ...
+             isempty(hCb)  || ~isgraphics(hCb);
 
 if needCreate
-    hFig = figure("Visible","off", "Color","w");
-    hAx  = axes(hFig);
+    hFig = figure( ...
+        "Visible", "off", ...
+        "Color", "w", ...
+        "MenuBar", "none", ...
+        "ToolBar", "none", ...
+        "NumberTitle", "off", ...
+        "HandleVisibility", "callback", ...
+        "IntegerHandle", "off");
+
+    hAx = axes("Parent", hFig);
 
     hIm = imagesc(hAx, data2D);
     axis(hAx, "image");
-    hCb = colorbar(hAx); %#ok<NASGU>
+    hCb = colorbar(hAx);
 else
     set(hIm, "CData", data2D);
 end
@@ -87,4 +99,9 @@ filepath = fullfile(outDir, filename);
 
 % More robust for PNG than saveas
 print(hFig, filepath, "-dpng", "-r300");
+
+% Restore previous current figure if it still exists
+if ~isempty(oldFig) && isgraphics(oldFig)
+    set(groot, "CurrentFigure", oldFig);
+end
 end

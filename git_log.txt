@@ -1,12 +1,54 @@
+commit 9f7263c7cbf46eb27ef9cbbecef8e02b5e6771c7
+Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
+Date:   Thu Apr 2 20:12:02 2026 +0200
+
+    README.md file added to empty output folders to prevent them from being deleted in the zip file
+
+commit c0c0549fd41e79797e6b26c59cce927158913f88
+Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
+Date:   Thu Apr 2 19:37:53 2026 +0200
+
+    Solve the problem of the updating figure in non-GUI mode, and finalize files
+
+commit deb55f083ce6f422eb3e13dffeaa8931414f6115
+Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
+Date:   Mon Mar 30 23:33:22 2026 +0200
+
+    Fix CLim handling when recreating GUI plot window
+
+commit c4f637fc2a1be96a05fc8c39a5a89683c583d944
+Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
+Date:   Sun Mar 29 14:45:51 2026 +0200
+
+    Track MAT files for final submission
+
+commit 9925e6f8a26424b9f3d69bbad2f11334efc75b27
+Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
+Date:   Sun Mar 29 14:35:28 2026 +0200
+
+    Fix the unrecognized function
+
+commit ad990a598eadfe9eba0cbe65fe2b556a092a0026
+Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
+Date:   Sun Mar 29 14:02:59 2026 +0200
+
+    Update report files and align repository with submission contents
+
+commit ebb0afd507d393cc017df2cc7034bdb8337cda28
+Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
+Date:   Sun Mar 29 13:59:43 2026 +0200
+
+    Clean tracked generated files for submission-like repository structure
+
 commit 68a025e97ce979e1235f145df5ec568dda4a6979
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-29
+Date:   Sun Mar 29 00:57:59 2026 +0100
 
     Minur bug fixed
 
 commit 02d2e40b389c10191ed99d1c705bb5497bf5cde5
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-27
+Date:   Fri Mar 27 19:53:13 2026 +0100
 
     Restructure tests into self-contained report-linked workflows
     
@@ -22,55 +64,55 @@ Date:   2026-03-27
 
 commit 6a428aeec42b61e44071b522119d23ffedc9a602
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-27
+Date:   Fri Mar 27 11:01:43 2026 +0100
 
     Add the explicit stability test, Improve the Grid refinement test
 
 commit 48b22552f55798cf67eeef27faf2aa7c399565c7
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-26
+Date:   Thu Mar 26 19:56:04 2026 +0100
 
     Add LaTeX file in the report folder
 
 commit 32268e2c38d8b26c7cefd2e5a9c3e6e089f8caec
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-26
+Date:   Thu Mar 26 19:47:15 2026 +0100
 
     Remove unused figures from repository
 
 commit 4cb2ff3d21b6bfed86c565c2b8e9b8f458b701a7
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-26
+Date:   Thu Mar 26 19:43:43 2026 +0100
 
     Add PDF for Manual option in Help menu in GUI
 
 commit 0a87f142bdd83988f54422d73bdb891dbad79182
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-24
+Date:   Tue Mar 24 13:37:14 2026 +0100
 
     Add README file for tests, make tests run independently, fix the legend problem in plotting
 
 commit 243cf62ccbdeeff869b1a06035fe22b800d6bd4f
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-18
+Date:   Wed Mar 18 13:45:24 2026 +0100
 
     Clean up final project defaults, update tests, and make stencil the default solver
 
 commit 88c0008f307f10ba852e18c4897056c22a3748b1
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-17
+Date:   Tue Mar 17 19:10:35 2026 +0100
 
     Replace process memory metric with whos-based solver memory and add benchmark report plots, and some bugs fixed
 
 commit 06abe6d4bebc19e9583b926128979c6df3abaa25
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-16
+Date:   Mon Mar 16 21:34:18 2026 +0100
 
     Some minor bugs fixed.
 
 commit eafb52a6ca335671a6394d339a43c293ace810bb
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-12
+Date:   Thu Mar 12 14:04:49 2026 +0100
 
     Finalize tests and verification scripts
     
@@ -78,25 +120,25 @@ Date:   2026-03-12
 
 commit 63ecad007d80e73ccd9ee1884c629de4689aacac
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-03-11
+Date:   Wed Mar 11 17:44:46 2026 +0100
 
     Improve controller robustness and runtime safety: add rootDir-based project paths, move logs and outputs to results/, implement safe GUI shutdown with isClosing, fix video format logic and writer cleanup, centralize status bar updates, validate loaded models (GrayScottModel), improve run-loop stability, and clarify plot titles after reset/restart/BC changes.
 
 commit eff16d3ae39e99d27a3e2b23f2a497c9ae097bb8
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-02-26
+Date:   Thu Feb 26 21:06:59 2026 +0100
 
     Finalize entry points and GUI lifecycle for submission: move run_model_class to root, add root-safe run_gui launcher, fix App Designer close lifecycle (no zombie singleton, no DestroyedObject errors), make recording path root-safe, remove dead solver/video state, centralize status updates, and harden plot window shutdown.
 
 commit 7763f1430b535eaac3252e871ca625f50f099e4b
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-02-26
+Date:   Thu Feb 26 10:32:52 2026 +0100
 
     Harden I/O layer: path-safe exportFrame, resilient plotState, validated benchmark plotting
 
 commit 2b3d7c61fdbdcbf41046eb68d479fe732b5810b2
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-02-24
+Date:   Tue Feb 24 20:52:36 2026 +0100
 
     refactor: remove legacy solver interface
     
@@ -109,42 +151,42 @@ Date:   2026-02-24
 
 commit ea1547cc4d5b1f03175d7a9aa4f0bd5182b80fae
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-02-23
+Date:   Mon Feb 23 16:32:27 2026 +0100
 
     Simplify GUI: reset F/k, BC reset, status bar, recording lamp
 
 commit 5824f38b0ea77af510dfbed455129bcc0b08eac3
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-02-21
+Date:   Sat Feb 21 18:10:37 2026 +0100
 
     Add boundary condition support, update core/operators, refresh GUI and report assets
 
 commit ba6f11330608aceed9d127bc7458a08d80a0160d
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-02-20
+Date:   Fri Feb 20 12:52:38 2026 +0100
 
     Some minor errors is handeled
 
 commit 0531127479ad96898b98cf5dcb71c48d0a4780d4
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-02-20
+Date:   Fri Feb 20 11:58:02 2026 +0100
 
     The Record function is added
 
 commit e006dc3f0b7b53e16676865234695f00bc16d572
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-02-18
+Date:   Wed Feb 18 17:55:39 2026 +0100
 
     Add App Designer GUI controller and update GrayScottModel implementation
 
 commit 6fb4ee1d8481841f12da6340078180c75a9ec7e9
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-02-13
+Date:   Fri Feb 13 20:44:08 2026 +0100
 
     Refactor project structure: separate model, operators, core, and io modules; explicit solver abstraction (sparse/dense/stencil)
 
 commit 551193f1e302d96d6c89fe5e4e375f7d368dae36
 Author: MehdiBakhshiZadeh <mehdi.bakhshi02@gmail.com>
-Date:   2026-02-13
+Date:   Fri Feb 13 11:56:31 2026 +0100
 
     Initial clean commit: Gray-Scott model implementation with tests and baseline variant
